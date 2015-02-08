@@ -19,6 +19,11 @@ d3.json( 'data/countries_2012.json', function( error, data ){
   .enter().append( 'th' )
     .text( function( d ) { 
       return d; 
+    })
+    .on( 'click', function( header, i ) {
+      tableBody.selectAll( 'tr' ).sort( function( a, b ) {
+        return d3.descending( a[ header ], b[ header ] );
+      });
     });
 
   // Table body
@@ -56,13 +61,6 @@ d3.json( 'data/countries_2012.json', function( error, data ){
     .text( function( d ) { 
       return d; 
     })
-
-  // Handlers
-  tableHead.on( 'click', function( header, i ) {
-    tableBody.selectAll( 'tr' ).sort( function( a, b ) {
-      return d3.descending( a[ header ], b[ header ] );
-    });
-  });
 
 });
 
