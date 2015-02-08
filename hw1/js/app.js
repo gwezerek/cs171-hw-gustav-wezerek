@@ -34,29 +34,31 @@ d3.json( 'data/countries_2012.json', function( error, data ){
           
       if ( this.classList.contains('col-ascending') ) {
 
-        this.classList.remove('col-descending');
+        this.classList.remove('col-ascending');
+        this.classList.add('col-descending');
 
-        if ( header === 'name' || 'continent' ) {
+        if ( header === 'name' || header === 'continent' ) {
           tableBody.selectAll( 'tr' ).sort( function( a, b ) {
-            return d3.ascending( a[ header ], b[ header ] );
+            return d3.descending( a[ header ], b[ header ] );
           });
         } else {
           tableBody.selectAll( 'tr' ).sort( function( a, b ) {
-            return d3.ascending( a[ header ], b[ header ] );
+            return d3.descending( a[ header ], b[ header ] );
           });
         }
 
       } else if ( this.classList.contains('col-descending') ) {
         
-        this.classList.remove('col-ascending');
+        this.classList.remove('col-descending');
+        this.classList.add('col-ascending');
 
-        if ( header === 'name' || 'continent' ) {
+        if ( header === 'name' || header === 'continent' ) {
           tableBody.selectAll( 'tr' ).sort( function( a, b ) {
-            return d3.descending( a[ header ], b[ header ] );
+            return d3.ascending( a[ header ], b[ header ] );
           });
         } else {
           tableBody.selectAll( 'tr' ).sort( function( a, b ) {
-            return d3.descending( a[ header ], b[ header ] );
+            return d3.ascending( a[ header ], b[ header ] );
           });
         }
 
@@ -65,13 +67,13 @@ d3.json( 'data/countries_2012.json', function( error, data ){
         resetClasses();
         this.classList.add('col-ascending');
 
-        if ( header === 'name' || 'continent' ) {
+        if ( header === 'name' || header === 'continent' ) {
           tableBody.selectAll( 'tr' ).sort( function( a, b ) {
-            return d3.ascending( a[ header ], b[ header ] );
+            return d3.descending( a[ header ], b[ header ] );
           });
         } else {
           tableBody.selectAll( 'tr' ).sort( function( a, b ) {
-            return d3.ascending( a[ header ], b[ header ] );
+            return d3.descending( a[ header ], b[ header ] );
           });
         }
 

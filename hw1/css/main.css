@@ -8,14 +8,14 @@ table {
 	border-collapse: collapse;
 }
 
-th {
+.thead-th {
 	border: 1px solid gray;
 	padding: 4px;
 	font-weight: 700;
+	cursor: pointer;
 }
 
 .col-ascending {
-	color: green;
 	cursor: s-resize;
 }
 
@@ -25,17 +25,12 @@ th {
 }
 
 .col-descending {
-	color: red;
 	cursor: n-resize;
 }
 
 .col-descending:after {
 	content: "↓";
 	font-size: 12px;
-}
-
-tr {
-	
 }
 
 td {
