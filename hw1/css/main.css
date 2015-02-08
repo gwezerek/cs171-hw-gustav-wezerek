@@ -14,6 +14,26 @@ th {
 	font-weight: 700;
 }
 
+.col-ascending {
+	color: green;
+	cursor: s-resize;
+}
+
+.col-ascending:after {
+	content: "↑";
+	font-size: 12px;
+}
+
+.col-descending {
+	color: red;
+	cursor: n-resize;
+}
+
+.col-descending:after {
+	content: "↓";
+	font-size: 12px;
+}
+
 tr {
 	
 }
