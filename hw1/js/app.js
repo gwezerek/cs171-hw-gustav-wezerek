@@ -109,12 +109,12 @@ d3.json( 'data/countries_2012.json', function( error, data ){
     });
   }
 
-  function filterContinents() {
-    tableBody.selectAll( 'tr' ).classed( 'table-row-exclude', false )
+  function filterContinents( rowSelection ) {
+    tableBody.selectAll( rowSelection ).classed( 'table-row-exclude', false )
       .filter( function( d, i ) {
         return continentSelects.indexOf( d[ 'continent' ] ) === -1 ;
       })
-      .attr( 'class', 'table-row-exclude' );
+      .classed( 'table-row-exclude', 'true' );
   }
 
   function nestContinents() {
@@ -171,15 +171,23 @@ d3.json( 'data/countries_2012.json', function( error, data ){
     d3.selectAll( '.table-chk:checked' ).each( function( d, i ) {
       continentSelects.push( this.getAttribute( 'name' ) );
     });
-    continentSelects.length ? filterContinents() : rows.classed( 'table-row-exclude', false );
+
+    if ( table.node().classList.contains( 'agg-continents' ) ) {
+      continentSelects.length ? filterContinents( '.tbody-row-is-agg' ) : rows.classed( 'table-row-exclude', false );
+    } else {
+      continentSelects.length ? filterContinents( '.tbody-row-no-agg' ) : rows.classed( 'table-row-exclude', false );
+    }
+
   });
 
   // Aggregating
   d3.selectAll( '.table-radio-agg' ).on( 'change', function() {
     if ( this.value === "true" ) {
       table.classed( 'agg-continents', true );
+      continentSelects.length ? filterContinents( '.tbody-row-is-agg' ) : rows.classed( 'table-row-exclude', false );
     } else {
       table.classed( 'agg-continents', false );
+      continentSelects.length ? filterContinents( '.tbody-row-no-agg' ) : rows.classed( 'table-row-exclude', false );
     }
   });
 

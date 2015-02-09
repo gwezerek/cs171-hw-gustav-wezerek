@@ -96,7 +96,7 @@ tbody tr:hover {
 	background-color: yellow;
 }
 
-.table-row-exclude {
+.table-row-exclude.table-row-exclude {
 	display: none;
 }
 
