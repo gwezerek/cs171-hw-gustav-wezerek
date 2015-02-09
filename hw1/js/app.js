@@ -150,9 +150,9 @@ d3.json( 'data/countries_2012.json', function( error, data ){
   function sortAggString( dir, colName ) {
     aggRows.sort( function( a, b ) {
       if ( dir === 'ascending' ) {
-        return d3.ascending( a.values[ colName ], b.values[ colName ] );
+        return d3.ascending( a.key, b.key );
       } else {
-        return d3.descending( a.values[ colName ], b.values[ colName ] );
+        return d3.descending( a.key, b.key );
       }
     });
   }
