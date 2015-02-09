@@ -46,6 +46,18 @@ table {
 	margin: 0 auto;
 }
 
+table .tbody-row-is-agg {
+	display: none;
+}
+
+.agg-continents .tbody-row-no-agg {
+	display: none;
+}
+
+.agg-continents .tbody-row-is-agg {
+	display: table-row;
+}
+
 .thead-th {
 	border: 1px solid gray;
 	padding: 4px;

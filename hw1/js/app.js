@@ -3,13 +3,16 @@ var continentSelects = [];
 
 // Helpers
 var addCommas = d3.format(',');
-var toGiga = d3.format('.4s');
+function toSF4( num ) {
+  var prefix = d3.formatPrefix( num );
+  return prefix.scale( num ).toFixed(1) + prefix.symbol;
+}
 
 // Generate viz
 d3.json( 'data/countries_2012.json', function( error, data ){
 
   var columns = [ 'name', 'continent', 'gdp', 'life_expectancy', 'population', 'year' ];
-
+  var nestedData = nestContinents();
   var table = d3.select( 'body' ).append( 'table' );
 
   // Table caption
@@ -33,11 +36,18 @@ d3.json( 'data/countries_2012.json', function( error, data ){
 
   // Table rows
   var rows = tableBody.selectAll( 'tr' )
-    .data( data )
-  .enter().append( 'tr' )
-    .attr( 'class', 'tbody-row' );
+    .data( data );
 
-  // Table header row
+  var aggRows = tableBody.selectAll( 'tr' )
+    .data( nestedData );
+
+  rows.enter().append( 'tr' )
+    .attr( 'class', 'tbody-row-no-agg' );
+
+  aggRows.enter().append( 'tr' )
+    .attr( 'class', 'tbody-row-is-agg' );
+
+  // Table cells
   var cells = rows.selectAll( 'td' )
     .data( function( d ) {
       // For each country in the dataset...
@@ -52,10 +62,40 @@ d3.json( 'data/countries_2012.json', function( error, data ){
             return datum.toPrecision(3);
           }
           else if ( columns[ i ] === 'gdp' ) {
-            return toGiga(datum);
+            return toSF4(datum);
           }
           else {
             return datum;
+          }
+      });
+    })
+  .enter().append( 'td' )
+    .text( function( d ) { 
+      return d; 
+    });
+
+  var aggCells = aggRows.selectAll( 'td' )
+    .data( function( d ) {
+      // For each continent in the dataset...
+      return d3.range( columns.length ).map( function( val, i ) {
+          // Return the correct, formatted cell
+          if ( columns[ i ] === 'name' ) {
+            return d.key;
+          }
+          if ( columns[ i ] === 'continent' ) {
+            return d.key;
+          }
+          if ( columns[ i ] === 'population' ) {
+            return addCommas(d.values.population);
+          }
+          else if ( columns[ i ] === 'life_expectancy' ) {
+            return d.values.life_expectancy.toPrecision(3);
+          }
+          else if ( columns[ i ] === 'gdp' ) {
+            return toSF4(d.values.gdp);
+          }
+          else {
+            return '2012';
           }
       });
     })
@@ -73,49 +113,60 @@ d3.json( 'data/countries_2012.json', function( error, data ){
     });
   }
 
-  function sortInt( dir, header ) {
-    rows.sort( function( a, b ) {
-      if ( a[ header ] === b[ header ] ) {
+  function sortInt( dir, colName ) {
+    tableBody.selectAll( 'tr' ).sort( function( a, b ) {
+      if ( a[ colName ] === b[ colName ] ) {
         return d3.ascending( a[ 'name' ], b[ 'name' ] );
       } else if ( dir === 'ascending' ) {
-        return a[ header ] - b[ header ];
+        return a[ colName ] - b[ colName ];
       } else {
-        return b[ header ] - a[ header ];
+        return b[ colName ] - a[ colName ];
       }
     });
   }
 
-  function sortString( dir, header ) {
-    rows.sort( function( a, b ) {
-      if ( a[ header ] === b[ header ] ) {
+  function sortString( dir, colName ) {
+    tableBody.selectAll( 'tr' ).sort( function( a, b ) {
+      if ( a[ colName ] === b[ colName ] ) {
         return d3.ascending( a[ 'name' ], b[ 'name' ] );
       } else if ( dir === 'ascending' ) {
-        return d3.ascending( a[ header ], b[ header ] );
+        return d3.ascending( a[ colName ], b[ colName ] );
       } else {
-        return d3.descending( a[ header ], b[ header ] );
+        return d3.descending( a[ colName ], b[ colName ] );
       }
     });
   }
 
   function filterContinents() {
-    rows.classed( 'table-row-exclude', false )
+    tableBody.selectAll( 'tr' ).classed( 'table-row-exclude', false )
       .filter( function( d, i ) {
         return continentSelects.indexOf( d[ 'continent' ] ) === -1 ;
       })
       .attr( 'class', 'table-row-exclude' );
   }
 
+  function nestContinents() {
+    return d3.nest()
+      .key(function(d) { return d.continent; })
+      .rollup(function(leaves) { return { 
+        'gdp' : d3.sum(leaves, function(d) { return d.gdp }),
+        'life_expectancy': d3.mean(leaves, function(d) { return d.life_expectancy }),
+        'population': d3.sum(leaves, function(d) { return d.population })
+      }; })
+      .entries(data);
+  }
+
   // Handlers
 
-  tableRows.on( 'click', function( header, i ) { 
+  tableRows.on( 'click', function( colName, i ) { 
     if ( this.classList.contains( 'col-ascending' ) ) {
       resetHeaderClasses();
       this.classList.add( 'col-descending' );
-      ( header === 'name' || header === 'continent' ) ? sortString( 'descending', header ) : sortInt( 'descending', header ) ;
+      ( colName === 'name' || colName === 'continent' ) ? sortString( 'descending', colName ) : sortInt( 'descending', colName ) ;
     } else {
       resetHeaderClasses();
       this.classList.add( 'col-ascending' );
-      ( header === 'name' || header === 'continent' ) ? sortString( 'ascending', header ) : sortInt( 'ascending', header ) ;
+      ( colName === 'name' || colName === 'continent' ) ? sortString( 'ascending', colName ) : sortInt( 'ascending', colName ) ;
     }
   });
 
@@ -125,6 +176,14 @@ d3.json( 'data/countries_2012.json', function( error, data ){
       continentSelects.push( this.getAttribute( 'name' ) );
     });
     continentSelects.length ? filterContinents() : rows.classed( 'table-row-exclude', false );
+  });
+
+  d3.selectAll( '.table-radio-agg' ).on( 'change', function() {
+    if ( this.value === "true" ) {
+      table.classed( 'agg-continents', true );
+    } else {
+      table.classed( 'agg-continents', false );
+    }
   });
 
 });
