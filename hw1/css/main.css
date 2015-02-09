@@ -84,6 +84,10 @@ tbody tr:hover {
 	background-color: yellow;
 }
 
+.table-row-exclude {
+	display: none;
+}
+
 td:nth-child(1),
 td:nth-child(2) {
 	text-align: center;

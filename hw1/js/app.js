@@ -98,10 +98,11 @@ d3.json( 'data/countries_2012.json', function( error, data ){
   }
 
   function filterContinents() {
-    rows.filter( function( d, i ) {
-      console.log( continentSelects.indexOf( d[ 'continent' ] ) );
-      return continentSelects.indexOf( d[ 'continent' ] );
-    });
+    rows.classed( 'table-row-exclude', false )
+      .filter( function( d, i ) {
+        return continentSelects.indexOf( d[ 'continent' ] ) === -1 ;
+      })
+      .attr( 'class', 'table-row-exclude' );
   }
 
   // Handlers
@@ -123,7 +124,7 @@ d3.json( 'data/countries_2012.json', function( error, data ){
     d3.selectAll( '.table-chk:checked' ).each( function( d, i ) {
       continentSelects.push( this.getAttribute( 'name' ) );
     });
-    filterContinents();
+    continentSelects.length ? filterContinents() : rows.classed( 'table-row-exclude', false );
   });
 
 });
