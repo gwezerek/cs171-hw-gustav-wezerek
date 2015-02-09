@@ -13,6 +13,9 @@ d3.json( 'data/countries_2012.json', function( error, data ){
 
   var columns = [ 'name', 'continent', 'gdp', 'life_expectancy', 'population', 'year' ];
   var nestedData = nestContinents();
+  var flattenedNest = flattenNest();
+  data = data.concat(flattenedNest);
+
   var table = d3.select( 'body' ).append( 'table' );
 
   // Table caption
@@ -23,7 +26,7 @@ d3.json( 'data/countries_2012.json', function( error, data ){
   var tableHead = table.append( 'thead' )
     .attr( 'class', 'thead-wrap' );
 
-  var tableRows = tableHead.append( 'tr' ).selectAll( 'th' )
+  var tableColHeads = tableHead.append( 'tr' ).selectAll( 'th' )
     .data( columns )
   .enter().append( 'th' )
     .attr( 'class', 'thead-th')
@@ -35,17 +38,11 @@ d3.json( 'data/countries_2012.json', function( error, data ){
   var tableBody = table.append( 'tbody' );
 
   // Table rows
+
   var rows = tableBody.selectAll( 'tr' )
-    .data( data );
-
-  var aggRows = tableBody.selectAll( 'tr' )
-    .data( nestedData );
-
-  rows.enter().append( 'tr' )
+    .data( data )
+  .enter().append( 'tr' )
     .attr( 'class', 'tbody-row-no-agg' );
-
-  aggRows.enter().append( 'tr' )
-    .attr( 'class', 'tbody-row-is-agg' );
 
   // Table cells
   var cells = rows.selectAll( 'td' )
@@ -74,35 +71,10 @@ d3.json( 'data/countries_2012.json', function( error, data ){
       return d; 
     });
 
-  var aggCells = aggRows.selectAll( 'td' )
-    .data( function( d ) {
-      // For each continent in the dataset...
-      return d3.range( columns.length ).map( function( val, i ) {
-          // Return the correct, formatted cell
-          if ( columns[ i ] === 'name' ) {
-            return d.key;
-          }
-          if ( columns[ i ] === 'continent' ) {
-            return d.key;
-          }
-          if ( columns[ i ] === 'population' ) {
-            return addCommas(d.values.population);
-          }
-          else if ( columns[ i ] === 'life_expectancy' ) {
-            return d.values.life_expectancy.toPrecision(3);
-          }
-          else if ( columns[ i ] === 'gdp' ) {
-            return toSF4(d.values.gdp);
-          }
-          else {
-            return '2012';
-          }
-      });
-    })
-  .enter().append( 'td' )
-    .text( function( d ) { 
-      return d; 
-    });
+  rows.filter( function( d, i ) {
+    return d.is_agg;
+  }).attr( 'class', 'tbody-row-is-agg' );
+
 
   // Helpers
 
@@ -137,26 +109,6 @@ d3.json( 'data/countries_2012.json', function( error, data ){
     });
   }
 
-  function sortAggInt( dir, colName ) {
-    aggRows.sort( function( a, b ) {
-      if ( dir === 'ascending' ) {
-        return a.values[ colName ] - b.values[ colName ];
-      } else {
-        return b.values[ colName ] - a.values[ colName ];
-      }
-    });
-  }
-
-  function sortAggString( dir, colName ) {
-    aggRows.sort( function( a, b ) {
-      if ( dir === 'ascending' ) {
-        return d3.ascending( a.key, b.key );
-      } else {
-        return d3.descending( a.key, b.key );
-      }
-    });
-  }
-
   function filterContinents() {
     tableBody.selectAll( 'tr' ).classed( 'table-row-exclude', false )
       .filter( function( d, i ) {
@@ -176,10 +128,26 @@ d3.json( 'data/countries_2012.json', function( error, data ){
       .entries(data);
   }
 
+  function flattenNest() {
+    var flatArr = [];
+    for ( var i = 0; i < nestedData.length; i++ ) {
+      flatArr.push( {
+        'name': nestedData[ i ].key,
+        'continent': nestedData[ i ].key,
+        'gdp': nestedData[ i ].values.gdp,
+        'life_expectancy': nestedData[ i ].values.life_expectancy,
+        'population': nestedData[ i ].values.population,
+        'year': '2012',
+        'is_agg': true
+      } );
+    }
+    return flatArr;
+  }
+
   // Handlers
 
   // Sorting
-  tableRows.on( 'click', function( colName, i ) { 
+  tableColHeads.on( 'click', function( colName, i ) { 
     var dir, oppDir = '';
 
     // First pass we sort the table ascending (the else())
@@ -193,12 +161,8 @@ d3.json( 'data/countries_2012.json', function( error, data ){
 
     resetHeaderClasses();
     this.classList.add( 'col-' + dir );
+    ( colName === 'name' || colName === 'continent' ) ? sortString( dir, colName ) : sortInt( dir, colName ) ;
 
-    if ( table.node().classList.contains( 'agg-continents' ) ) {
-      ( colName === 'name' || colName === 'continent' ) ? sortAggString( dir, colName ) : sortAggInt( dir, colName ) ;
-    } else {
-      ( colName === 'name' || colName === 'continent' ) ? sortString( dir, colName ) : sortInt( dir, colName ) ;
-    }
   });
 
   // Filtering
