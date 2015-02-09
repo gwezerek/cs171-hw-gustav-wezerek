@@ -23,32 +23,44 @@ d3.json( 'data/countries_2012.json', function( error, data ){
     })
     .on( 'click', function( header, i ) {
       
-      if ( this.classList.contains('col-ascending') ) {
+      if ( this.classList.contains( 'col-ascending' ) ) {
         resetClasses();
-        this.classList.add('col-descending');
-        sortUpDown( 'descending' );
+        this.classList.add( 'col-descending' );
+        ( header === 'name' || header === 'continent' ) ? sortString( 'descending' ) : sortInt( 'descending' ) ;
       } else {
         resetClasses();
-        this.classList.add('col-ascending');
-        sortUpDown( 'ascending' );
+        this.classList.add( 'col-ascending' );
+        ( header === 'name' || header === 'continent' ) ? sortString( 'ascending' ) : sortInt( 'ascending' ) ;
       }
 
       function resetClasses() {
-        var tableHeadEls = document.querySelectorAll('.thead-th');
-        for (i = 0; i < tableHeadEls.length; ++i) {
+        var tableHeadEls = document.querySelectorAll( '.thead-th' );
+        for ( i = 0; i < tableHeadEls.length; ++i ) {
           tableHeadEls[i].classList.remove('col-ascending');
           tableHeadEls[i].classList.remove('col-descending');
         };
       }
 
-      function sortUpDown( dir ) {
+      function sortInt( dir ) {
         tableBody.selectAll( 'tr' ).sort( function( a, b ) {
           if ( a[ header ] === b[ header ] ) {
-            return a[ 'name' ] - b[ 'name' ];
+            return d3.ascending( a[ 'name' ], b[ 'name' ] );
           } else if ( dir === 'ascending' ) {
             return a[ header ] - b[ header ];
           } else {
             return b[ header ] - a[ header ];
+          }
+        });
+      }
+
+      function sortString( dir ) {
+        tableBody.selectAll( 'tr' ).sort( function( a, b ) {
+          if ( a[ header ] === b[ header ] ) {
+            return d3.ascending( a[ 'name' ], b[ 'name' ] );
+          } else if ( dir === 'ascending' ) {
+            return d3.ascending( a[ header ], b[ header ] );
+          } else {
+            return d3.descending( a[ header ], b[ header ] );
           }
         });
       }
