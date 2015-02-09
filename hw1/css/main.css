@@ -62,7 +62,7 @@ table .tbody-row-is-agg {
 	border: 1px solid gray;
 	padding: 4px;
 	font-weight: 700;
-	cursor: pointer;
+	cursor: n-resize;
 }
 
 .col-ascending {
