@@ -1,11 +1,44 @@
+/* LAYOUT */
+
+body {
+	margin: 0 auto;
+	max-width: 900px;
+	text-align: center;
+	padding: 40px;
+}
+
+
+/* FORM */
+
+form {
+	margin-bottom: 20px;
+}
+
+fieldset {
+	border-width: 0;
+}
+
+label {
+	margin-right: 10px;
+}
+
+input {
+	margin-left: 5px;
+}
+
+
+/* TABLE */
+
 caption {
-	padding: 8px;
-	border: 1px solid gray;
+	font-size: 24px;
+	font-weight: 700;
+	margin-bottom: 10px;
 }
 
 table {
 	border: 1px solid gray;
 	border-collapse: collapse;
+	margin: 0 auto;
 }
 
 .thead-th {
@@ -57,3 +90,5 @@ td:nth-child(5),
 td:nth-child(6) {
 	text-align: right;
 }
+
+
