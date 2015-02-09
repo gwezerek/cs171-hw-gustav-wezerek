@@ -27,6 +27,16 @@ label {
 	margin-right: 10px;
 }
 
+.slider {
+	margin: 0;
+}
+
+.slider-label {
+	color: lightgray;
+	margin: 0;
+	vertical-align: 2px;
+}
+
 input {
 	margin-left: 5px;
 }
