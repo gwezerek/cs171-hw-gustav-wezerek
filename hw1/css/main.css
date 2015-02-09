@@ -18,6 +18,11 @@ fieldset {
 	border-width: 0;
 }
 
+legend {
+	display: inline-block;
+	font-weight: 700;
+}
+
 label {
 	margin-right: 10px;
 }

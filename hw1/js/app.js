@@ -1,3 +1,9 @@
+// Global
+var continentSelects = [];
+
+// Helpers
+var addCommas = d3.format(',');
+var toGiga = d3.format('.4s');
 
 // Generate viz
 d3.json( 'data/countries_2012.json', function( error, data ){
@@ -14,57 +20,12 @@ d3.json( 'data/countries_2012.json', function( error, data ){
   var tableHead = table.append( 'thead' )
     .attr( 'class', 'thead-wrap' );
 
-  tableHead.append( 'tr' ).selectAll( 'th' )
+  var tableRows = tableHead.append( 'tr' ).selectAll( 'th' )
     .data( columns )
   .enter().append( 'th' )
     .attr( 'class', 'thead-th')
     .text( function( d ) { 
       return d; 
-    })
-    .on( 'click', function( header, i ) {
-      
-      if ( this.classList.contains( 'col-ascending' ) ) {
-        resetClasses();
-        this.classList.add( 'col-descending' );
-        ( header === 'name' || header === 'continent' ) ? sortString( 'descending' ) : sortInt( 'descending' ) ;
-      } else {
-        resetClasses();
-        this.classList.add( 'col-ascending' );
-        ( header === 'name' || header === 'continent' ) ? sortString( 'ascending' ) : sortInt( 'ascending' ) ;
-      }
-
-      function resetClasses() {
-        var tableHeadEls = document.querySelectorAll( '.thead-th' );
-        for ( i = 0; i < tableHeadEls.length; ++i ) {
-          tableHeadEls[i].classList.remove('col-ascending');
-          tableHeadEls[i].classList.remove('col-descending');
-        };
-      }
-
-      function sortInt( dir ) {
-        tableBody.selectAll( 'tr' ).sort( function( a, b ) {
-          if ( a[ header ] === b[ header ] ) {
-            return d3.ascending( a[ 'name' ], b[ 'name' ] );
-          } else if ( dir === 'ascending' ) {
-            return a[ header ] - b[ header ];
-          } else {
-            return b[ header ] - a[ header ];
-          }
-        });
-      }
-
-      function sortString( dir ) {
-        tableBody.selectAll( 'tr' ).sort( function( a, b ) {
-          if ( a[ header ] === b[ header ] ) {
-            return d3.ascending( a[ 'name' ], b[ 'name' ] );
-          } else if ( dir === 'ascending' ) {
-            return d3.ascending( a[ header ], b[ header ] );
-          } else {
-            return d3.descending( a[ header ], b[ header ] );
-          }
-        });
-      }
-
     });
 
   // Table body
@@ -74,7 +35,7 @@ d3.json( 'data/countries_2012.json', function( error, data ){
   var rows = tableBody.selectAll( 'tr' )
     .data( data )
   .enter().append( 'tr' )
-    .attr( 'class', 'row' );
+    .attr( 'class', 'tbody-row' );
 
   // Table header row
   var cells = rows.selectAll( 'td' )
@@ -101,10 +62,68 @@ d3.json( 'data/countries_2012.json', function( error, data ){
   .enter().append( 'td' )
     .text( function( d ) { 
       return d; 
-    })
+    });
+
+  // Helpers
+
+  function resetHeaderClasses() {
+    d3.selectAll( '.thead-th' ).each( function( d, i ) {
+      this.classList.remove('col-ascending');
+      this.classList.remove('col-descending');
+    });
+  }
+
+  function sortInt( dir, header ) {
+    rows.sort( function( a, b ) {
+      if ( a[ header ] === b[ header ] ) {
+        return d3.ascending( a[ 'name' ], b[ 'name' ] );
+      } else if ( dir === 'ascending' ) {
+        return a[ header ] - b[ header ];
+      } else {
+        return b[ header ] - a[ header ];
+      }
+    });
+  }
+
+  function sortString( dir, header ) {
+    rows.sort( function( a, b ) {
+      if ( a[ header ] === b[ header ] ) {
+        return d3.ascending( a[ 'name' ], b[ 'name' ] );
+      } else if ( dir === 'ascending' ) {
+        return d3.ascending( a[ header ], b[ header ] );
+      } else {
+        return d3.descending( a[ header ], b[ header ] );
+      }
+    });
+  }
+
+  function filterContinents() {
+    rows.filter( function( d, i ) {
+      console.log( continentSelects.indexOf( d[ 'continent' ] ) );
+      return continentSelects.indexOf( d[ 'continent' ] );
+    });
+  }
+
+  // Handlers
+
+  tableRows.on( 'click', function( header, i ) { 
+    if ( this.classList.contains( 'col-ascending' ) ) {
+      resetHeaderClasses();
+      this.classList.add( 'col-descending' );
+      ( header === 'name' || header === 'continent' ) ? sortString( 'descending', header ) : sortInt( 'descending', header ) ;
+    } else {
+      resetHeaderClasses();
+      this.classList.add( 'col-ascending' );
+      ( header === 'name' || header === 'continent' ) ? sortString( 'ascending', header ) : sortInt( 'ascending', header ) ;
+    }
+  });
+
+  d3.selectAll( '.table-chk' ).on( 'change', function() {
+    continentSelects = [];
+    d3.selectAll( '.table-chk:checked' ).each( function( d, i ) {
+      continentSelects.push( this.getAttribute( 'name' ) );
+    });
+    filterContinents();
+  });
 
 });
-
-// Helpers
-var addCommas = d3.format(',');
-var toGiga = d3.format('.4s');

@@ -8,16 +8,19 @@
   <body>
   <form>
     <fieldset>
+      <legend>Time update</legend>
       <input type="range" name="points" min="1995" max="2012" step="1" value="0" id="slider-time" oninput=";">
     </fieldset>
     <fieldset>
-      <label>Americas<input type="checkbox" name="Americas" value="Americas" title="Americas" onchange"('changed!')"></input></label>
-      <label>Africa<input type="checkbox" name="Africa" value="Africa" title="Africa" onchange"('changed!')"></input></label>
-      <label>Asia<input type="checkbox" name="Asia" value="Asia" title="Asia" onchange"('changed!')"></input></label>
-      <label>Europe<input type="checkbox" name="Europe" value="Europe" title="Europe" onchange"('changed!')"></input></label>
-      <label>Oceania<input type="checkbox" name="Oceania" value="Oceania" title="Oceania" onchange"('changed!')"></input></label>
+      <legend>Filter by</legend>
+      <label>Americas<input class="table-chk" type="checkbox" name="Americas" value="Americas" title="Americas"></input></label>
+      <label>Africa<input class="table-chk" type="checkbox" name="Africa" value="Africa" title="Africa"></input></label>
+      <label>Asia<input class="table-chk" type="checkbox" name="Asia" value="Asia" title="Asia"></input></label>
+      <label>Europe<input class="table-chk" type="checkbox" name="Europe" value="Europe" title="Europe"></input></label>
+      <label>Oceania<input class="table-chk" type="checkbox" name="Oceania" value="Oceania" title="Oceania"></input></label>
     </fieldset>
     <fieldset>
+      <legend>Aggregation</legend>
       <label>None<input type="radio" name="agg-none" value="agg-none" onclick=""></label>
       <label>By continent<input type="radio" name="agg-continent" value="agg-continent" onclick=""></label>
     </fieldset>
