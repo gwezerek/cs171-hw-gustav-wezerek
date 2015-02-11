@@ -9,12 +9,14 @@ function toSF4( num ) {
 }
 
 // Generate viz
-d3.json( 'data/countries_2012.json', function( error, data ){
+d3.json( 'data/countries_1995_2012.json', function( error, data ){
 
   var columns = [ 'name', 'continent', 'gdp', 'life_expectancy', 'population', 'year' ];
   var nestedData = nestContinents();
   var flattenedNest = flattenNest();
   data = data.concat(flattenedNest);
+
+  setSliderRange();
 
   var table = d3.select( 'body' ).append( 'table' );
 
@@ -142,6 +144,10 @@ d3.json( 'data/countries_2012.json', function( error, data ){
       } );
     }
     return flatArr;
+  }
+
+  function setSliderRange() {
+    console.log(data);
   }
 
   // Handlers
