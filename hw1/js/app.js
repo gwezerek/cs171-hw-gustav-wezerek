@@ -32,8 +32,8 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
     .data( columns )
   .enter().append( 'th' )
     .attr( 'class', 'thead-th')
-    .text( function( d ) { 
-      return d; 
+    .text( function( d ) {
+      return d;
     });
 
   // Table body
@@ -69,8 +69,8 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
       });
     })
   .enter().append( 'td' )
-    .text( function( d ) { 
-      return d; 
+    .text( function( d ) {
+      return d;
     });
 
   rows.filter( function( d, i ) {
@@ -122,7 +122,7 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
   function nestContinents() {
     return d3.nest()
       .key(function(d) { return d.continent; })
-      .rollup(function(leaves) { return { 
+      .rollup(function(leaves) { return {
         'gdp' : d3.sum(leaves, function(d) { return d.gdp }),
         'life_expectancy': d3.mean(leaves, function(d) { return d.life_expectancy }),
         'population': d3.sum(leaves, function(d) { return d.population })
@@ -147,13 +147,30 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
   }
 
   function setSliderRange() {
-    console.log(data);
+    var sliderLabels = document.querySelectorAll( '.slider-label' );
+    var yearSlider = document.querySelector( '#year-slider' );
+    var lowest = Number.POSITIVE_INFINITY;
+    var highest = Number.NEGATIVE_INFINITY;
+    var tmp;
+    data.forEach( function( d, i ) {
+      if ( d.years ) {
+        for ( var i = 0; i < d.years.length; i += 1 ) {
+          tmp = d.years[i].year;
+          if (tmp < lowest) lowest = tmp;
+          if (tmp > highest) highest = tmp;
+        }
+      }
+    })
+    sliderLabels[0].innerHTML = lowest;
+    sliderLabels[1].innerHTML = highest;
+    yearSlider.setAttribute( 'min', lowest );
+    yearSlider.setAttribute( 'max', highest );
   }
 
   // Handlers
 
   // Sorting
-  tableColHeads.on( 'click', function( colName, i ) { 
+  tableColHeads.on( 'click', function( colName, i ) {
     var dir, oppDir = '';
 
     // First pass we sort the table ascending (the else())
