@@ -1,5 +1,6 @@
 // Global
 var continentSelects = [];
+var yearSlider = document.querySelector( '#year-slider' );
 
 // Helpers
 var addCommas = d3.format(',');
@@ -13,11 +14,16 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
 
   var columns = [ 'name', 'continent', 'gdp', 'life_expectancy', 'population', 'year' ];
   var nestedData = nestContinents();
-  var flattenedNest = flattenNest();
-  data = data.concat(flattenedNest);
+  var rows, cells;
+  // var flattenedNest = flattenNest();
+  // data = data.concat(flattenedNest);
+  var yearData = [];
 
+  // Init
   setSliderRange();
+  updateYear();
 
+  // Drawing the table
   var table = d3.select( 'body' ).append( 'table' );
 
   // Table caption
@@ -40,14 +46,13 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
   var tableBody = table.append( 'tbody' );
 
   // Table rows
-
-  var rows = tableBody.selectAll( 'tr' )
-    .data( data )
+  rows = tableBody.selectAll( 'tr' )
+    .data( yearData )
   .enter().append( 'tr' )
     .attr( 'class', 'tbody-row-no-agg' );
 
   // Table cells
-  var cells = rows.selectAll( 'td' )
+  cells = rows.selectAll( 'td' )
     .data( function( d ) {
       // For each country in the dataset...
       return d3.range( columns.length ).map( function( val, i ) {
@@ -77,8 +82,39 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
     return d.is_agg;
   }).attr( 'class', 'tbody-row-is-agg' );
 
-
   // Helpers
+
+  function updateCells() {
+
+    // Update the data
+    rows.data( yearData );
+
+    // Repopulate the table
+    cells.data( function( d ) {
+      // For each country in the dataset...
+      return d3.range( columns.length ).map( function( val, i ) {
+          // Return the correct, formatted cell
+          var datum = d[ columns[ i ] ];
+
+          if ( columns[ i ] === 'population' ) {
+            return addCommas(datum);
+          }
+          else if ( columns[ i ] === 'life_expectancy' ) {
+            return datum.toPrecision(3);
+          }
+          else if ( columns[ i ] === 'gdp' ) {
+            return toSF4(datum);
+          }
+          else {
+            return datum;
+          }
+      });
+    })
+    .text( function( d ) {
+      return d;
+    });
+
+  }
 
   function resetHeaderClasses() {
     d3.selectAll( '.thead-th' ).each( function( d, i ) {
@@ -148,7 +184,6 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
 
   function setSliderRange() {
     var sliderLabels = document.querySelectorAll( '.slider-label' );
-    var yearSlider = document.querySelector( '#year-slider' );
     var lowest = Number.POSITIVE_INFINITY;
     var highest = Number.NEGATIVE_INFINITY;
     var tmp;
@@ -165,6 +200,25 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
     sliderLabels[1].innerHTML = highest;
     yearSlider.setAttribute( 'min', lowest );
     yearSlider.setAttribute( 'max', highest );
+  }
+
+  function updateYear() {
+    yearData =[];
+    var newYear = yearSlider.value;
+    var newEntry = {};
+
+    data.forEach( function( d, i) {
+      newEntry = getYear( d.years, newYear );
+      for (var key in d) { newEntry[key] = d[key]; }
+      delete newEntry.years;
+      yearData.push( newEntry );
+    });
+  }
+
+  function getYear( array, year ) {
+    for ( var i = 0; i < array.length; i += 1 ) {
+      if ( array[i].year === parseInt( year, 10 ) ) return array[i];
+    }
   }
 
   // Handlers
@@ -212,6 +266,12 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
       table.classed( 'agg-continents', false );
       continentSelects.length ? filterContinents( '.tbody-row-no-agg' ) : rows.classed( 'table-row-exclude', false );
     }
+  });
+
+  // Year slider
+  d3.select( '#year-slider' ).on( 'input', function() {
+    updateYear();
+    updateCells();
   });
 
 });

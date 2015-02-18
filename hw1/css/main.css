@@ -24,7 +24,7 @@ legend {
 }
 
 label {
-	margin-right: 10px;
+	margin-left: 10px;
 }
 
 .slider {
@@ -39,6 +39,14 @@ label {
 
 input {
 	margin-left: 5px;
+}
+
+.table-chk, .table-radio-agg {
+	margin-right: 5px;
+}
+
+.table-chk {
+	vertical-align: 1.5px;
 }
 
 
