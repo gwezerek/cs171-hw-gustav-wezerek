@@ -2,8 +2,6 @@
 
 body {
 	margin: 0 auto;
-	max-width: 900px;
-	text-align: center;
 	padding: 40px;
 }
 
@@ -16,6 +14,7 @@ form {
 
 fieldset {
 	border-width: 0;
+	padding-left: 0;
 }
 
 legend {
@@ -23,7 +22,7 @@ legend {
 	font-weight: 700;
 }
 
-label {
+label:not(:first-of-type) {
 	margin-left: 10px;
 }
 
@@ -35,10 +34,6 @@ label {
 	color: lightgray;
 	margin: 0;
 	vertical-align: 2px;
-}
-
-input {
-	margin-left: 5px;
 }
 
 .table-chk, .table-radio-agg {
@@ -56,12 +51,12 @@ caption {
 	font-size: 24px;
 	font-weight: 700;
 	margin-bottom: 10px;
+	text-align: left;
 }
 
 table {
 	border: 1px solid gray;
 	border-collapse: collapse;
-	margin: 0 auto;
 }
 
 table .tbody-row-is-agg {
@@ -128,6 +123,14 @@ td:nth-child(4),
 td:nth-child(5),
 td:nth-child(6) {
 	text-align: right;
+}
+
+
+
+/*Bar chart*/
+rect {
+  fill:teal;
+  fill-opacity:.8;
 }
 
 
