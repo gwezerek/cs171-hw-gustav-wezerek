@@ -14,7 +14,7 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
 
   var columns = [ 'name', 'continent', 'gdp', 'life_expectancy', 'population', 'year' ];
   var nestedData = nestContinents();
-  var rows, cells;
+  var rows, cells, sortedCol, dir, oppDir;
   // var flattenedNest = flattenNest();
   // data = data.concat(flattenedNest);
   var yearData = [];
@@ -221,11 +221,35 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
     }
   }
 
+  function handleFilter() {
+    if ( table.node().classList.contains( 'agg-continents' ) ) {
+      continentSelects.length ? filterContinents( '.tbody-row-is-agg' ) : rows.classed( 'table-row-exclude', false );
+    } else {
+      continentSelects.length ? filterContinents( '.tbody-row-no-agg' ) : rows.classed( 'table-row-exclude', false );
+    }
+  }
+
+  function handleSort() {
+    dir, oppDir = '';
+
+    // First pass we sort the table ascending (the else())
+    if ( document.querySelector( '.col-ascending' ) ) {
+      dir = 'ascending';
+      oppDir = 'descending'
+    } else {
+      dir = 'descending';
+      oppDir = 'ascending'
+    }
+
+    ( sortedCol === 'name' || sortedCol === 'continent' ) ? sortString( dir, sortedCol ) : sortInt( dir, sortedCol ) ;
+  }
+
   // Handlers
 
   // Sorting
   tableColHeads.on( 'click', function( colName, i ) {
-    var dir, oppDir = '';
+    // var dir, oppDir = '';
+    sortedCol = colName;
 
     // First pass we sort the table ascending (the else())
     if ( this.classList.contains( 'col-ascending' ) ) {
@@ -236,9 +260,10 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
       oppDir = 'descending'
     }
 
+    ( colName === 'name' || colName === 'continent' ) ? sortString( dir, colName ) : sortInt( dir, colName ) ;
+
     resetHeaderClasses();
     this.classList.add( 'col-' + dir );
-    ( colName === 'name' || colName === 'continent' ) ? sortString( dir, colName ) : sortInt( dir, colName ) ;
 
   });
 
@@ -248,13 +273,7 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
     d3.selectAll( '.table-chk:checked' ).each( function( d, i ) {
       continentSelects.push( this.getAttribute( 'name' ) );
     });
-
-    if ( table.node().classList.contains( 'agg-continents' ) ) {
-      continentSelects.length ? filterContinents( '.tbody-row-is-agg' ) : rows.classed( 'table-row-exclude', false );
-    } else {
-      continentSelects.length ? filterContinents( '.tbody-row-no-agg' ) : rows.classed( 'table-row-exclude', false );
-    }
-
+    handleFilter();
   });
 
   // Aggregating
@@ -272,6 +291,8 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
   d3.select( '#year-slider' ).on( 'input', function() {
     updateYear();
     updateCells();
+    handleFilter();
+    handleSort();
   });
 
 });
