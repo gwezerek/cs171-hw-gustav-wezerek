@@ -13,15 +13,12 @@ function toSF4( num ) {
 d3.json( 'data/countries_1995_2012.json', function( error, data ){
 
   var columns = [ 'name', 'continent', 'gdp', 'life_expectancy', 'population', 'year' ];
-  var nestedData = nestContinents();
-  var rows, cells, sortedCol, dir, oppDir;
-  // var flattenedNest = flattenNest();
-  // data = data.concat(flattenedNest);
-  var yearData = [];
+  var rows, cells, sortedCol, dir, oppDir, newYear, yearData;
 
   // Init
   setSliderRange();
   updateYear();
+  updateAgg();
 
   // Drawing the table
   var table = d3.select( 'body' ).append( 'table' );
@@ -114,6 +111,11 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
       return d;
     });
 
+    rows.attr( 'class', 'tbody-row-no-agg' )
+      .filter( function( d, i ) {
+        return d.is_agg;
+      }).attr( 'class', 'tbody-row-is-agg' );
+
   }
 
   function resetHeaderClasses() {
@@ -157,16 +159,16 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
 
   function nestContinents() {
     return d3.nest()
-      .key(function(d) { return d.continent; })
-      .rollup(function(leaves) { return {
-        'gdp' : d3.sum(leaves, function(d) { return d.gdp }),
-        'life_expectancy': d3.mean(leaves, function(d) { return d.life_expectancy }),
-        'population': d3.sum(leaves, function(d) { return d.population })
-      }; })
-      .entries(data);
+      .key( function(d) { return d.continent; } )
+      .rollup( function(leaves) { return {
+        'gdp' : d3.sum( leaves, function(d) { return d.gdp } ),
+        'life_expectancy': d3.mean( leaves, function(d) { return d.life_expectancy } ),
+        'population': d3.sum( leaves, function(d) { return d.population } )
+      }; } )
+      .entries( yearData );
   }
 
-  function flattenNest() {
+  function flattenNest( nestedData ) {
     var flatArr = [];
     for ( var i = 0; i < nestedData.length; i++ ) {
       flatArr.push( {
@@ -175,7 +177,7 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
         'gdp': nestedData[ i ].values.gdp,
         'life_expectancy': nestedData[ i ].values.life_expectancy,
         'population': nestedData[ i ].values.population,
-        'year': '2012',
+        'year': newYear,
         'is_agg': true
       } );
     }
@@ -203,8 +205,8 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
   }
 
   function updateYear() {
-    yearData =[];
-    var newYear = yearSlider.value;
+    yearData = [];
+    newYear = yearSlider.value;
     var newEntry = {};
 
     data.forEach( function( d, i) {
@@ -244,6 +246,24 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
     ( sortedCol === 'name' || sortedCol === 'continent' ) ? sortString( dir, sortedCol ) : sortInt( dir, sortedCol ) ;
   }
 
+  function handleAgg() {
+    var checkedEl = document.querySelector( '.table-radio-agg:checked' );
+
+    if ( checkedEl && checkedEl.value === "agg" ) {
+      table.classed( 'agg-continents', true );
+      continentSelects.length ? filterContinents( '.tbody-row-is-agg' ) : rows.classed( 'table-row-exclude', false );
+    } else {
+      table.classed( 'agg-continents', false );
+      continentSelects.length ? filterContinents( '.tbody-row-no-agg' ) : rows.classed( 'table-row-exclude', false );
+    }
+  }
+
+  function updateAgg() {
+    var nestedData = nestContinents();
+    var flattenedNest = flattenNest( nestedData );
+    yearData = yearData.concat(flattenedNest);
+  }
+
   // Handlers
 
   // Sorting
@@ -278,19 +298,15 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
 
   // Aggregating
   d3.selectAll( '.table-radio-agg' ).on( 'change', function() {
-    if ( this.value === "true" ) {
-      table.classed( 'agg-continents', true );
-      continentSelects.length ? filterContinents( '.tbody-row-is-agg' ) : rows.classed( 'table-row-exclude', false );
-    } else {
-      table.classed( 'agg-continents', false );
-      continentSelects.length ? filterContinents( '.tbody-row-no-agg' ) : rows.classed( 'table-row-exclude', false );
-    }
+    handleAgg();
   });
 
   // Year slider
   d3.select( '#year-slider' ).on( 'input', function() {
     updateYear();
+    updateAgg();
     updateCells();
+    handleAgg();
     handleFilter();
     handleSort();
   });
