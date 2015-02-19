@@ -4,6 +4,7 @@
 var continentSelects = [];
 var yearSlider = document.querySelector( '#year-slider' );
 var min = 0;
+var encoding = 'population';
 var rows, cells, sortedCol, dir, oppDir, newYear, yearData, max;
 
 // BAR CHART SETUP
@@ -38,10 +39,13 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
   .enter().append( 'g' )
     .attr( 'class', 'bar-row' );
 
+  rows.filter( function( d, i ) {
+    return d.is_agg;
+  }).attr( 'class', 'bar-row row-is-agg' );
 
   var bars = rows.append( 'rect' )
     .attr({
-      width: function( d ) { return xScale( d.population ); },
+      width: function( d ) { return xScale( d[ encoding ] ); },
       height: yScale.rangeBand(),
       x: margin.left,
       y: function( d ) { return yScale( d.name ); },
@@ -56,10 +60,6 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
       y: function( d ) { return yScale( d.name ); },
       class: 'bar-label'
     });
-
-  // rows.filter( function( d, i ) {
-  //   return d.is_agg;
-  // }).attr( 'class', 'tbody-row-is-agg' );
 
 
   // DATA HELPERS
@@ -127,10 +127,15 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
   // =============================================
 
   function setDomains() {
-    max = d3.max(yearData, function(d) { return d.population; } );
+    max = d3.max( yearData, function( d ) { return d[ encoding ]; } );
 
-    xScale.domain( [min, max] );
-    yScale.domain( yearData.map( function(d) { return d.name; } ) );
+    xScale.domain( [ min, max ] );
+    yScale.domain( yearData.map( function( d ) { return d.name; } ) );
+  }
+
+  function changeEncoding() {
+    bars.transition()
+      .attr( 'width',  function( d ) { return xScale( d[ encoding ] ); } );
   }
 
   function updateCells() {
@@ -151,10 +156,7 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
       return d;
     });
 
-    rows.attr( 'class', 'tbody-row-no-agg' )
-      .filter( function( d, i ) {
-        return d.is_agg;
-      }).attr( 'class', 'tbody-row-is-agg' );
+
 
   }
 
@@ -190,11 +192,11 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
   }
 
   function filterContinents( rowSelection ) {
-    tableBody.selectAll( rowSelection ).classed( 'table-row-exclude', false )
+    tableBody.selectAll( rowSelection ).classed( 'row-exclude', false )
       .filter( function( d, i ) {
         return continentSelects.indexOf( d[ 'continent' ] ) === -1 ;
       })
-      .classed( 'table-row-exclude', 'true' );
+      .classed( 'row-exclude', 'true' );
   }
 
 
@@ -203,9 +205,9 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
 
   function handleFilter() {
     if ( table.node().classList.contains( 'agg-continents' ) ) {
-      continentSelects.length ? filterContinents( '.tbody-row-is-agg' ) : rows.classed( 'table-row-exclude', false );
+      continentSelects.length ? filterContinents( '.row-is-agg' ) : rows.classed( 'row-exclude', false );
     } else {
-      continentSelects.length ? filterContinents( '.tbody-row-no-agg' ) : rows.classed( 'table-row-exclude', false );
+      continentSelects.length ? filterContinents( '.row-no-agg' ) : rows.classed( 'row-exclude', false );
     }
   }
 
@@ -225,14 +227,14 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
   }
 
   function handleAgg() {
-    var checkedEl = document.querySelector( '.table-radio-agg:checked' );
+    var checkedEl = document.querySelector( '.radio-agg:checked' );
 
     if ( checkedEl && checkedEl.value === 'agg' ) {
       table.classed( 'agg-continents', true );
-      continentSelects.length ? filterContinents( '.tbody-row-is-agg' ) : rows.classed( 'table-row-exclude', false );
+      continentSelects.length ? filterContinents( '.row-is-agg' ) : rows.classed( 'row-exclude', false );
     } else {
       table.classed( 'agg-continents', false );
-      continentSelects.length ? filterContinents( '.tbody-row-no-agg' ) : rows.classed( 'table-row-exclude', false );
+      continentSelects.length ? filterContinents( '.row-no-agg' ) : rows.classed( 'row-exclude', false );
     }
   }
 
@@ -241,6 +243,14 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
 
   // HANDLERS
   // =============================================
+
+  // Encoding
+  d3.selectAll( '.radio-encode' ).on( 'change', function() {
+    encoding = this.value;
+    setDomains();
+    changeEncoding();
+  });
+
 
   // Sorting
   // tableColHeads.on( 'click', function( colName, i ) {
@@ -264,16 +274,16 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
   // });
 
   // Filtering
-  d3.selectAll( '.table-chk' ).on( 'change', function() {
+  d3.selectAll( '.chk' ).on( 'change', function() {
     continentSelects = [];
-    d3.selectAll( '.table-chk:checked' ).each( function( d, i ) {
+    d3.selectAll( '.chk:checked' ).each( function( d, i ) {
       continentSelects.push( this.getAttribute( 'name' ) );
     });
     handleFilter();
   });
 
   // Aggregating
-  d3.selectAll( '.table-radio-agg' ).on( 'change', function() {
+  d3.selectAll( '.radio-agg' ).on( 'change', function() {
     handleAgg();
   });
 

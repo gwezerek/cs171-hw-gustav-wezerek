@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <link href="css/normalize.css" type="text/css" rel="stylesheet">
-    <link href="css/main.css" type="text/css" rel="stylesheet">
+    <link href="css/bar.css" type="text/css" rel="stylesheet">
   </head>
   <body>
   <h1>Country Rankings</h1>
@@ -16,27 +16,27 @@
     </fieldset>
     <fieldset>
       <legend>Encoding</legend>
-      <label><input class="table-radio-encode" type="radio" name="encode" value="encode-pop" checked>Population</label>
-      <label><input class="table-radio-encode" type="radio" name="encode" value="encode-gdp">GDP</label>
+      <label><input class="radio-encode" type="radio" name="encode" value="population" checked>Population</label>
+      <label><input class="radio-encode" type="radio" name="encode" value="gdp">GDP</label>
     </fieldset>
     <fieldset>
       <legend>Filtering</legend>
-      <label><input class="table-chk" type="checkbox" name="Americas" value="Americas" title="Americas"></input>Americas</label>
-      <label><input class="table-chk" type="checkbox" name="Africa" value="Africa" title="Africa"></input>Africa</label>
-      <label><input class="table-chk" type="checkbox" name="Asia" value="Asia" title="Asia"></input>Asia</label>
-      <label><input class="table-chk" type="checkbox" name="Europe" value="Europe" title="Europe"></input>Europe</label>
-      <label><input class="table-chk" type="checkbox" name="Oceania" value="Oceania" title="Oceania"></input>Oceania</label>
+      <label><input class="chk" type="checkbox" name="Americas" value="Americas" title="Americas"></input>Americas</label>
+      <label><input class="chk" type="checkbox" name="Africa" value="Africa" title="Africa"></input>Africa</label>
+      <label><input class="chk" type="checkbox" name="Asia" value="Asia" title="Asia"></input>Asia</label>
+      <label><input class="chk" type="checkbox" name="Europe" value="Europe" title="Europe"></input>Europe</label>
+      <label><input class="chk" type="checkbox" name="Oceania" value="Oceania" title="Oceania"></input>Oceania</label>
     </fieldset>
     <fieldset>
       <legend>Aggregation</legend>
-      <label><input class="table-radio-agg" type="radio" name="agg" value="no-agg" checked>None</label>
-      <label><input class="table-radio-agg" type="radio" name="agg" value="agg">By continent</label>
+      <label><input class="radio-agg" type="radio" name="agg" value="no-agg" checked>None</label>
+      <label><input class="radio-agg" type="radio" name="agg" value="agg">By continent</label>
     </fieldset>
     <fieldset>
       <legend>Sorting</legend>
-      <label><input class="table-radio-sort" type="radio" name="sort" value="sort-name" checked>Name</label>
-      <label><input class="table-radio-sort" type="radio" name="sort" value="sort-pop" checked>Population</label>
-      <label><input class="table-radio-sort" type="radio" name="sort" value="sort-gdp">GDP</label>
+      <label><input class="radio-sort" type="radio" name="sort" value="name">Name</label>
+      <label><input class="radio-sort" type="radio" name="sort" value="population">Population</label>
+      <label><input class="radio-sort" type="radio" name="sort" value="gdp">GDP</label>
     </fieldset>
   </form>
     <script src="http://d3js.org/d3.v3.min.js"></script>
