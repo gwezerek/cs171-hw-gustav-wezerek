@@ -108,7 +108,7 @@ tbody tr:hover {
 	background-color: yellow;
 }
 
-.row-exclude.row-exclude {
+.row-is-filtered.row-is-filtered {
 	display: none;
 }
 
