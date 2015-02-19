@@ -33,11 +33,11 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
 
   // Draw viz
   var rows = vizWrap.selectAll( 'g' )
-    .data( data )
+    .data( yearData )
   .enter().append( 'g' );
 
-  var bars = rows
-    .append( 'rect' )
+
+  var bars = rows.append( 'rect' )
     .attr( 'width', function(d) { return xScale( d.population ); })
     .attr( 'height', 5)
     .attr( 'x', xScale( min ) )
@@ -113,10 +113,10 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
   // =============================================
 
   function setDomains() {
-    max = d3.max(data, function(d) { return d.population; } );
+    max = d3.max(yearData, function(d) { return d.population; } );
 
     xScale.domain([min, max]);
-    yScale.domain(data.map(function(d) { return d.name; }));
+    yScale.domain(yearData.map(function(d) { return d.name; }));
   }
 
   function updateCells() {
