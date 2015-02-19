@@ -8,40 +8,54 @@ var rows, cells, sortedCol, dir, oppDir, newYear, yearData, max;
 
 // BAR CHART SETUP
 // =============================================
-var margin = {top: 50, bottom: 10, left:300, right: 40};
-var width = 900 - margin.left - margin.right;
-var height = 900 - margin.top - margin.bottom;
-var xScale = d3.scale.linear().range([0, width]);
-var yScale = d3.scale.ordinal().rangeRoundBands( [0, height], .8, 0 );
+var margin = { top: 0, bottom: 0, left:90, right: 0 };
+var width = 700 - margin.left - margin.right;
+var height = 4000 - margin.top - margin.bottom;
+var xScale = d3.scale.linear().range( [ 0, width - margin.left ] );
+var yScale = d3.scale.ordinal().rangeRoundBands( [ 0, height ], 0.5 );
+var barColor = d3.scale.category10();
 
 var svg = d3.select( 'body' ).append( 'svg' )
   .attr( 'width', width + margin.left + margin.right)
   .attr( 'height', height + margin.top + margin.bottom);
 
-var vizWrap = svg.append( 'g' )
+var barWrap = svg.append( 'g' )
   .attr( 'transform', 'translate( ' + margin.left + ',' + margin.top + ' )' )
-  .attr( 'class', 'viz-wrap' );
+  .attr( 'class', 'bar-wrap' );
 
 
 // LOAD DATA, DRAW VIZ
 // =============================================
-d3.json( 'data/countries_1995_2012.json', function( error, data ){
+d3.json( 'data/countries_1995_2012.json', function( error, data ) {
 
   // Init
   refreshData();
   setDomains();
 
   // Draw viz
-  var rows = vizWrap.selectAll( 'g' )
+  var rows = barWrap.selectAll( 'g' )
     .data( yearData )
-  .enter().append( 'g' );
+  .enter().append( 'g' )
+    .attr( 'class', 'bar-row' );
 
 
   var bars = rows.append( 'rect' )
-    .attr( 'width', function(d) { return xScale( d.population ); })
-    .attr( 'height', 5)
-    .attr( 'x', xScale( min ) )
-    .attr( 'y', function( d ) { return yScale( d.name ); });
+    .attr({
+      width: function( d ) { return xScale( d.population ); },
+      height: yScale.rangeBand(),
+      x: margin.left,
+      y: function( d ) { return yScale( d.name ); },
+      class: 'bar-rect',
+      fill: function( d ) { return barColor( d.continent ); }
+    });
+
+  var labels = rows.append( 'text' )
+    .text( function(d) { return d.name; })
+    .attr({
+      x: margin.left - 5,
+      y: function( d ) { return yScale( d.name ); },
+      class: 'bar-label'
+    });
 
   // rows.filter( function( d, i ) {
   //   return d.is_agg;
@@ -115,8 +129,8 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ){
   function setDomains() {
     max = d3.max(yearData, function(d) { return d.population; } );
 
-    xScale.domain([min, max]);
-    yScale.domain(yearData.map(function(d) { return d.name; }));
+    xScale.domain( [min, max] );
+    yScale.domain( yearData.map( function(d) { return d.name; } ) );
   }
 
   function updateCells() {

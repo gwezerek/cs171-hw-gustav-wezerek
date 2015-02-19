@@ -31,12 +31,11 @@ label:not(:first-of-type) {
 }
 
 .slider-label {
-	color: lightgray;
 	margin: 0;
 	vertical-align: 2px;
 }
 
-.table-chk, .table-radio-agg {
+input {
 	margin-right: 5px;
 }
 
@@ -128,9 +127,12 @@ td:nth-child(6) {
 
 
 /*Bar chart*/
-rect {
-  fill:teal;
-  fill-opacity:.8;
+.bar-rect {
+}
+
+.bar-label {
+	text-anchor: end;
+	alignment-baseline: hanging;
 }
 
 
