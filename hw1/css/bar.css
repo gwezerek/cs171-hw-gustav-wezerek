@@ -58,18 +58,6 @@ table {
 	border-collapse: collapse;
 }
 
-.row-is-agg {
-	display: none;
-}
-
-.agg-continents .row-no-agg {
-	display: none;
-}
-
-.agg-continents .row-is-agg {
-	display: block;
-}
-
 .thead-th {
 	border: 1px solid gray;
 	padding: 4px;
