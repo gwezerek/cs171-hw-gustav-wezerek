@@ -3,9 +3,7 @@
 // =============================================
 var continentSelects = [];
 var yearSlider = document.querySelector( '#year-slider' );
-var min = 0;
-var encoding = 'population';
-var rows, cells, sortedCol, dir, oppDir, newYear, yearData, max;
+var currentYear, yearData, max, currentData, aggData, rows, rowEnter, bars, labels, sorting, encoding;
 
 // BAR CHART SETUP
 // =============================================
@@ -30,59 +28,28 @@ var barWrap = svg.append( 'g' )
 d3.json( 'data/countries_1995_2012.json', function( error, data ) {
 
   // Init
-  refreshData();
-  setXDomain();
-  setYDomain();
-
-  // Draw viz
-  var rows = barWrap.selectAll( 'g' )
-    .data( yearData )
-  .enter().append( 'g' )
-    .attr({
-      class: 'bar-row row-no-agg',
-      transform: function( d, i ) { return 'translate( 0, ' + yScale( i ) + ')'; }
-    });
-
-  rows.filter( function( d, i ) {
-    return d.is_agg;
-  }).attr( 'class', 'bar-row row-is-agg row-is-filtered' );
-
-  var bars = rows.append( 'rect' )
-    .attr({
-      width: function( d ) { return xScale( d[ encoding ] ); },
-      height: yScale.rangeBand(),
-      x: margin.left,
-      class: 'bar-rect',
-      fill: function( d ) { return barColor( d.continent ); }
-    });
-
-  var labels = rows.append( 'text' )
-    .text( function(d) { return d.name; })
-    .attr({
-      x: margin.left - 5,
-      class: 'bar-label'
-    });
+  initChart();
 
 
   // DATA HELPERS
   // =============================================
 
-  function refreshData() {
-    updateYear();
-    updateAgg();
+  function updateYear() {
+    currentYear = yearSlider.value;
   }
 
-  function updateYear() {
+  function updateYearData() {
     yearData = [];
-    newYear = yearSlider.value;
-    var newEntry = {};
 
-    data.forEach( function( d, i) {
-      newEntry = getYear( d.years, newYear );
-      for (var key in d) { newEntry[key] = d[key]; }
-      delete newEntry.years;
+    data.forEach( function( d, i ) {
+      var newEntry = getYear( d.years, currentYear );
+      for ( var key in d ) {
+        newEntry[ key ] = d[ key ];
+      }
       yearData.push( newEntry );
     });
+
+    currentData = yearData;
   }
 
   function getYear( array, year ) {
@@ -91,16 +58,15 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
     }
   }
 
-  function updateAgg() {
+  function updateAggData() {
     var nestedData = nestContinents();
-    var flattenedNest = flattenNest( nestedData );
-    yearData = yearData.concat(flattenedNest);
+    aggData = flattenNest( nestedData );
   }
 
   function nestContinents() {
     return d3.nest()
-      .key( function(d) { return d.continent; } )
-      .rollup( function(leaves) { return {
+      .key( function( d ) { return d.continent; } )
+      .rollup( function( leaves ) { return {
         'gdp' : d3.sum( leaves, function(d) { return d.gdp } ),
         'life_expectancy': d3.mean( leaves, function(d) { return d.life_expectancy } ),
         'population': d3.sum( leaves, function(d) { return d.population } )
@@ -117,125 +83,126 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
         'gdp': nestedData[ i ].values.gdp,
         'life_expectancy': nestedData[ i ].values.life_expectancy,
         'population': nestedData[ i ].values.population,
-        'year': newYear,
-        'is_agg': true
+        'year': currentYear
       } );
     }
     return flatArr;
+  }
+
+  function sortData() {
+    currentData = currentData.sort( function( a, b ) {
+      if ( a[ sorting ] === b[ sorting ] ) {
+        return d3.ascending( a[ 'name' ], b[ 'name' ] );
+      } else if ( sorting === 'name' ) {
+        return d3.ascending( a[ sorting ], b[ sorting ] );
+      } else {
+        return d3.descending( a[ sorting ], b[ sorting ] );
+      }
+    });
+  }
+
+  function filterData() {
+    currentData = currentData.filter( function( d, i ) {
+      return continentSelects.indexOf( d[ 'continent' ] ) !== -1 ;
+    })
   }
 
 
   // HELPERS
   // =============================================
 
-  function updateRowData() {
-    rows.data( yearData );
+  function initChart() {
+    updateYear();
+    setEncoding();
+    setSorting();
+    updateYearData();
+    updateAggData();
+    setXDomain();
+    setYDomain();
+    updateRows();
   }
 
   function setXDomain() {
-    max = d3.max( yearData, function( d ) { return d[ encoding ]; } );
-    xScale.domain( [ min, max ] );
+    max = d3.max( aggData, function( d ) { return d[ encoding ]; } );
+    xScale.domain( [ 0, max ] );
   }
 
   function setYDomain() {
-    yScale.domain( yearData.map( function( d, i ) { return i; } ) );
+    yScale.domain( currentData.map( function( d, i ) { return i; } ) );
   }
 
-  function setBarWidth() {
+  function setEncoding() {
+    encoding = d3.select( '.radio-encode:checked' ).node().value;
+  }
+
+  function setSorting() {
+    sorting = d3.select( '.radio-sort:checked' ).node().value;
+  }
+
+  function updateBarWidth() {
     bars.transition()
       .attr( 'width',  function( d ) { return xScale( d[ encoding ] ); } );
   }
 
-  function setRowY() {
+  function updateRows() {
 
-    var shownRows = rows.filter( function( d, i ) {
-      return !rows[0][i].classList.contains( 'row-is-filtered' );
-    })
+    // Start with data for selected year
+    currentData = yearData;
 
-    shownRows.transition()
-      .attr( 'transform',  function( d, i ) { return 'translate( 0, ' + yScale( i ) + ')'; } );
-  }
-
-
-
-  function resetHeaderClasses() {
-    d3.selectAll( '.thead-th' ).each( function( d, i ) {
-      this.classList.remove( 'col-ascending' );
-      this.classList.remove( 'col-descending' );
-    });
-  }
-
-  function sortInt( dir, colName ) {
-    rows.sort( function( a, b ) {
-      if ( a[ colName ] === b[ colName ] ) {
-        return d3.ascending( a[ 'name' ], b[ 'name' ] );
-      } else if ( dir === 'ascending' ) {
-        return a[ colName ] - b[ colName ];
-      } else {
-        return b[ colName ] - a[ colName ];
-      }
-    });
-  }
-
-  function sortString( dir, colName ) {
-    rows.sort( function( a, b ) {
-      if ( a[ colName ] === b[ colName ] ) {
-        return d3.ascending( a[ 'name' ], b[ 'name' ] );
-      } else if ( dir === 'ascending' ) {
-        return d3.ascending( a[ colName ], b[ colName ] );
-      } else {
-        return d3.descending( a[ colName ], b[ colName ] );
-      }
-    });
-  }
-
-  function filterContinents( rowSelection ) {
-    barWrap.selectAll( rowSelection ).classed( 'row-is-filtered', false )
-      .filter( function( d, i ) {
-        return continentSelects.indexOf( d[ 'continent' ] ) === -1 ;
-      }).classed( 'row-is-filtered', 'true' );
-  }
-
-
-  // DISPATCHERS
-  // =============================================
-
-  function handleFilter() {
-    if ( barWrap.node().classList.contains( 'agg-continents' ) ) {
-      continentSelects.length ? filterContinents( '.row-is-agg' ) : rows.classed( 'row-is-filtered', false );
-    } else {
-      continentSelects.length ? filterContinents( '.row-no-agg' ) : rows.classed( 'row-is-filtered', false );
-    }
-  }
-
-  function handleSort() {
-    dir, oppDir = '';
-
-    // First pass we sort the table ascending (the else())
-    if ( document.querySelector( '.col-ascending' ) ) {
-      dir = 'ascending';
-      oppDir = 'descending'
-    } else {
-      dir = 'descending';
-      oppDir = 'ascending'
+    // Aggregate
+    if ( document.querySelector( '.radio-agg:checked' ).value === 'agg' ) {
+      currentData = aggData;
+      setXDomain();
     }
 
-    ( sortedCol === 'name' || sortedCol === 'continent' ) ? sortString( dir, sortedCol ) : sortInt( dir, sortedCol ) ;
+    // Filter
+    if ( continentSelects.length ) filterData();
+
+    // Sort
+    sortData();
+
+    // Update rows
+    rows = barWrap.selectAll( 'g' )
+      .data( currentData, function( d ) {
+        return d.name;
+      });
+
+    rowEnter = rows.enter().append( 'g' );
+
+    rows.transition()
+      .attr({
+        class: 'bar-row',
+        transform: function( d, i ) { return 'translate( 0, ' + ( yScale.rangeBand() + ( yScale.rangeBand() / 2 ) ) * i + ')'; }
+      });
+
+    rows.exit()
+      .remove();
+
+    // Update bars
+    rowEnter.append( 'rect' );
+
+    bars = rows.selectAll( 'rect' )
+      .data( function( d ) { return [ d ]; } );
+
+    bars.attr({
+        width: function( d ) { return xScale( d[ encoding ] ); },
+        height: yScale.rangeBand(),
+        x: margin.left,
+        class: 'bar-rect',
+        fill: function( d ) { return barColor( d.continent ); }
+      });
+
+    // Update labels
+    rowEnter.append( 'text' );
+
+    labels = rows.selectAll( 'text' )
+      .text( function(d) { return d.name; })
+      .attr({
+        x: margin.left - 5,
+        class: 'bar-label'
+      });
+
   }
-
-  function handleAgg() {
-    var checkedEl = document.querySelector( '.radio-agg:checked' );
-
-    if ( checkedEl && checkedEl.value === 'agg' ) {
-      table.classed( 'agg-continents', true );
-      continentSelects.length ? filterContinents( '.row-is-agg' ) : rows.classed( 'row-is-filtered', false );
-    } else {
-      table.classed( 'agg-continents', false );
-      continentSelects.length ? filterContinents( '.row-no-agg' ) : rows.classed( 'row-is-filtered', false );
-    }
-  }
-
-
 
 
   // HANDLERS
@@ -243,32 +210,17 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
 
   // Encoding
   d3.selectAll( '.radio-encode' ).on( 'change', function() {
-    encoding = this.value;
+    setEncoding();
     setXDomain();
-    setBarWidth();
+    updateBarWidth();
   });
 
-
   // Sorting
-  // tableColHeads.on( 'click', function( colName, i ) {
-  //   // var dir, oppDir = '';
-  //   sortedCol = colName;
-
-  //   // First pass we sort the table ascending (the else())
-  //   if ( this.classList.contains( 'col-ascending' ) ) {
-  //     dir = 'descending';
-  //     oppDir = 'ascending'
-  //   } else {
-  //     dir = 'ascending';
-  //     oppDir = 'descending'
-  //   }
-
-  //   ( colName === 'name' || colName === 'continent' ) ? sortString( dir, colName ) : sortInt( dir, colName ) ;
-
-  //   resetHeaderClasses();
-  //   this.classList.add( 'col-' + dir );
-
-  // });
+  d3.selectAll( '.radio-sort' ).on( 'change', function() {
+    setSorting();
+    sortData();
+    updateRows();
+  });
 
   // Filtering
   d3.selectAll( '.chk' ).on( 'change', function() {
@@ -276,25 +228,20 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
     d3.selectAll( '.chk:checked' ).each( function( d, i ) {
       continentSelects.push( this.getAttribute( 'name' ) );
     });
-    handleFilter();
-    setRowY();
+    updateRows();
   });
 
   // Aggregating
   d3.selectAll( '.radio-agg' ).on( 'change', function() {
-    handleAgg();
+    updateRows();
   });
 
   // Year slider
   d3.select( '#year-slider' ).on( 'input', function() {
-    refreshData();
-    updateRowData();
-    setXDomain();
-    setBarWidth();
-    // updateCells();
-    // handleAgg();
-    // handleFilter();
-    // handleSort();
+    updateYear();
+    updateYearData();
+    updateAggData();
+    updateRows();
   });
 
 });
