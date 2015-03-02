@@ -1,3 +1,10 @@
+// GLOBAL MISC
+// =============================================
+var yScaleEncoding;
+
+
+// BAR CHART SETUP
+// =============================================
 var margin = { top: 10, bottom: 10, left:90, right: 0 };
 var width = 900 - margin.left - margin.right;
 var height = 1100 - margin.top - margin.bottom;
@@ -15,7 +22,12 @@ var node_scale = d3.scale.linear().domain([0, nb_cat]).range([5, 50]);
 var yScale = d3.scale.linear().range( [ 0, height ] );
 
 
+// LOAD DATA, DRAW VIZ
+// =============================================
 d3.json( 'data/countries_2012.json', function( error, data ) {
+
+  // Init
+  // initChart();
 
   graph.nodes.forEach(function( d, i ) {
     graph.nodes.forEach(function( e, j ) {
@@ -71,13 +83,13 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
     graphUpdate(500);
   }
 
-  function line_cat_layout() {
+  function encodedLineLayout() {
 
     force.stop();
 
     graph.nodes.forEach(function(d, i) {
       d.x = margin.left;
-      d.y = height - yScale( d.population ) + margin.top;
+      d.y = height - yScale( d[yScaleEncoding] ) + margin.top;
     })
 
     console.log( graph.nodes );
@@ -118,17 +130,17 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
   function category_color() {
 
     d3.selectAll('circle').transition().duration(500)
-                          .style('fill', function(d) {
-                            return fill(d.cat);
-                          });
+      .style('fill', function(d) {
+        return fill(d.cat);
+      });
   }
 
   function category_size() {
 
     d3.selectAll('circle').transition().duration(500)
-                          .attr('r', function(d) {
-                            return Math.sqrt(node_scale(d.cat));
-                          });
+      .attr('r', function(d) {
+        return Math.sqrt(node_scale(d.cat));
+      });
   }
 
   function graphUpdate(duration) {
@@ -148,7 +160,7 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
   d3.select('input[value=\'force\']').on('click', forceLayout);
   d3.select('input[value=\'random\']').on('click', random_layout);
   d3.select('input[value=\'line\']').on('click', lineLayout);
-  d3.select('input[value=\'line_cat\']').on('click', line_cat_layout);
+  d3.select('input[value=\'line_cat\']').on('click', encodedLineLayout);
   d3.select('input[value=\'circular\']').on('click', circular_layout);
 
   d3.select('input[value=\'nocolor\']').on('click', function() {
@@ -185,11 +197,35 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
         class: 'node-label'
       });
 
-  function setYDomain() {
-    yScale.domain( [ 0, d3.max( graph.nodes, function( d ) { return d.population } ) ] );
+
+  initChart();
+
+  // HELPERS
+  // =============================================
+
+  function initChart() {
+    setYEncoding();
+    setYDomain();
+    forceLayout();
   }
 
-  setYDomain();
-  forceLayout();
+  function setYEncoding() {
+    yScaleEncoding = d3.select( '.js-opt-scale-y:checked' ).node().value;
+  }
+
+  function setYDomain() {
+    yScale.domain( [ 0, d3.max( graph.nodes, function( d ) { return d[yScaleEncoding] } ) ] );
+  }
+
+
+  // HANDLERS
+  // =============================================
+
+  // Encoding
+  d3.select( '#js-select-scale-y' ).on( 'change', function() {
+    setYEncoding();
+    setYDomain();
+    encodedLineLayout();
+  });
 
 });
