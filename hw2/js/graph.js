@@ -1,6 +1,6 @@
 // GLOBAL MISC
 // =============================================
-var yScaleEncoding, xScaleEncoding;
+var yScaleEncoding, xScaleEncoding, sortingDimension;
 
 
 // BAR CHART SETUP
@@ -128,7 +128,7 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
     graphUpdate(500);
   }
 
-  function circular_layout() {
+  function circleLayout() {
     force.stop();
 
     var r = Math.min(height, width)/2;
@@ -137,7 +137,7 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
             .outerRadius(r);
 
     var pie = d3.layout.pie()
-            .sort(function(a, b) { return a.cat - b.cat;}) // Sorting by categories
+            .sort(function(a, b) { return a[ sortingDimension ] - b[ sortingDimension ];}) // Sorting by categories
             .value(function(d, i) {
               return 1;  // We want an equal pie share/slice for each point
             });
@@ -210,6 +210,10 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
     }
   }
 
+  function setSortingDimension() {
+    sortingDimension = d3.select( '.js-opt-circle-dimension:checked' ).node().value;
+  }
+
   function category_color() {
     d3.selectAll('circle').transition().duration(500)
       .style('fill', function(d) {
@@ -250,6 +254,13 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
     setXDomain();
     setYDomain();
     scatterLayout();
+  });
+
+  // Circle
+  d3.selectAll( '#js-layout-circle, #js-select-circle-dimensions' ).on( 'change', function() {
+    setScatterEncodings( this );
+    setSortingDimension();
+    circleLayout();
   });
 
 });

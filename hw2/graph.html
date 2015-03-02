@@ -27,9 +27,19 @@
           <option class="js-opt-scatter-scales" value="lat_lon">Latitude and longitude</option>
         </select>
       </div>
-<!--       <div class="form-label-wrap"><label class="form-label"><input type="radio" name="layout" value="force">Force</label></div>
-      <div class="form-label-wrap"><label class="form-label"><input type="radio" name="layout" value="random" >Random</label></div>
-      <div class="form-label-wrap"><label class="form-label"><input type="radio" name="layout" value="circular">Circular</label></div> -->
+      <div class="form-label-wrap">
+        <label class="form-label"><input id="js-layout-circle" type="radio" name="layout" value="circle">Circle</label>
+        <select id="js-select-circle-dimensions">
+          <option class="js-opt-circle-dimension" value="population" selected>Population</option>
+          <option class="js-opt-circle-dimension" value="gdp">GDP</option>
+        </select>
+      </div>
+<!--       <div class="form-label-wrap">
+      <label class="form-label"><input type="radio" name="layout" value="random" >Random</label>
+      </div>
+      <div class="form-label-wrap">
+      <label class="form-label"><input type="radio" name="layout" value="circular">Circular</label>
+      </div> -->
 
     </fieldset>
 <!--     <fieldset>
