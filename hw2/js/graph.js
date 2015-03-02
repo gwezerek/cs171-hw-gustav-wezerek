@@ -5,7 +5,8 @@ var yScaleEncoding;
 
 // BAR CHART SETUP
 // =============================================
-var margin = { top: 10, bottom: 10, left:90, right: 0 };
+var nodeR = 3;
+var margin = { top: 10, bottom: 10, left: nodeR, right: 0 };
 var width = 900 - margin.left - margin.right;
 var height = 1100 - margin.top - margin.bottom;
 
@@ -17,7 +18,6 @@ var fill = d3.scale.category10();
 var graph = { nodes: [], links: [] };
 var nb_nodes = 120;
 var nb_cat = 10;
-var nodeR = 3;
 var node_scale = d3.scale.linear().domain([0, nb_cat]).range([5, 50]);
 var yScale = d3.scale.linear().range( [ 0, height ] );
 
@@ -206,11 +206,11 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
   function initChart() {
     setYEncoding();
     setYDomain();
-    forceLayout();
+    lineLayout();
   }
 
   function setYEncoding() {
-    yScaleEncoding = d3.select( '.js-opt-scale-y:checked' ).node().value;
+    yScaleEncoding = d3.select( '.js-opt-line-scale-y:checked' ).node().value;
   }
 
   function setYDomain() {
@@ -222,7 +222,7 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
   // =============================================
 
   // Encoding
-  d3.select( '#js-select-scale-y' ).on( 'change', function() {
+  d3.select( '#js-select-line-scale-y' ).on( 'change', function() {
     setYEncoding();
     setYDomain();
     encodedLineLayout();

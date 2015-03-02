@@ -9,26 +9,38 @@
   <form>
     <fieldset>
       <legend>Layout</legend>
-      <label><input type="radio" name="layout" value="force" checked> Force</label>
-      <label><input type="radio" name="layout" value="random" > Random</label>
-      <label><input type="radio" name="layout" value="circular"> Circular</label>
-      <label><input type="radio" name="layout" value="line"> Line</label>
-      <label><input type="radio" name="layout" value="line_cat"> Line by Category</label>
-      <select id="js-select-scale-y">
-        <option class="js-opt-scale-y" value="population" selected>Population</option>
-        <option class="js-opt-scale-y" value="gdp">GDP</option>
-        <option class="js-opt-scale-y" value="life_expectancy">Life expectancy</option>
-      </select>
+      <div class="form-label-wrap"><label class="form-label"><input type="radio" name="layout" value="line" checked>Line</label></div>
+      <div class="form-label-wrap">
+        <label class="form-label"><input type="radio" name="layout" value="line_cat">Line by Category</label>
+        <select id="js-select-line-scale-y">
+          <option class="js-opt-line-scale-y" value="population" selected>Population</option>
+          <option class="js-opt-line-scale-y" value="gdp">GDP</option>
+          <option class="js-opt-line-scale-y" value="life_expectancy">Life expectancy</option>
+          <option class="js-opt-line-scale-y" value="latitude">Latitude</option>
+          <option class="js-opt-line-scale-y" value="longitude">Longitude</option>
+        </select>
+      </div>
+      <div class="form-label-wrap">
+        <label class="form-label"><input type="radio" name="layout" value="scatterplot">Scatterplot</label>
+        <select id="js-select-scatter-scale-y">
+          <option class="js-opt-scatter-scale-y" value="pop_gdp" selected>Population and GDP</option>
+          <option class="js-opt-scatter-scale-y" value="lat_lon">Latitude and Longitude</option>
+        </select>
+      </div>
+      <div class="form-label-wrap"><label class="form-label"><input type="radio" name="layout" value="force">Force</label></div>
+      <div class="form-label-wrap"><label class="form-label"><input type="radio" name="layout" value="random" >Random</label></div>
+      <div class="form-label-wrap"><label class="form-label"><input type="radio" name="layout" value="circular">Circular</label></div>
+
     </fieldset>
     <fieldset>
       <legend>Color</legend>
-      <label><input type="radio" name="color" value="nocolor" checked> None</label>
-    <label><input type="radio" name="color" value="color_cat" > Category</label>
+      <div class="form-label-wrap"><label class="form-label"><input type="radio" name="color" value="nocolor" checked>None</label></div>
+      <div class="form-label-wrap"><label class="form-label"><input type="radio" name="color" value="color_cat" >Category</label></div>
     </fieldset>
     <fieldset>
       <legend>Size</legend>
-      <label><input type="radio" name="size" value="nosize" checked> None</label>
-      <label><input type="radio" name="size" value="size_cat" > Category</label>
+      <div class="form-label-wrap"><label class="form-label"><input type="radio" name="size" value="nosize" checked>None</label></div>
+      <div class="form-label-wrap"><label class="form-label"><input type="radio" name="size" value="size_cat" >Category</label></div>
     </fieldset>
   </form>
 
