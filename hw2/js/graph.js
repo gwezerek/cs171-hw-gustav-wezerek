@@ -194,7 +194,6 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
       xScaleEncoding = 'latitude';
       yScaleEncoding = 'longitude';
     }
-    console.log( d3.select( '.js-opt-line-scale-y:checked' ).node() );
   }
 
   function setXDomain() {
