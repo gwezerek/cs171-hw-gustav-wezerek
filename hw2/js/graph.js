@@ -1,10 +1,10 @@
-var margin = { top: 10, bottom: 0, left:90, right: 0 };
+var margin = { top: 10, bottom: 10, left:90, right: 0 };
 var width = 900 - margin.left - margin.right;
-var height = 1200 - margin.top - margin.bottom;
+var height = 1100 - margin.top - margin.bottom;
 
-var svg = d3.select('body').append('svg')
-            .attr('width', width)
-            .attr('height', height);
+var svg = d3.select( 'body' ).append( 'svg' )
+  .attr( 'width', width + margin.left + margin.right )
+  .attr( 'height', height + margin.top + margin.bottom );
 
 var fill = d3.scale.category10();
 var graph = { nodes: [], links: [] };
@@ -12,14 +12,15 @@ var nb_nodes = 120;
 var nb_cat = 10;
 var nodeR = 3;
 var node_scale = d3.scale.linear().domain([0, nb_cat]).range([5, 50]);
+var yScale = d3.scale.linear().range( [ 0, height ] );
 
 
 d3.json( 'data/countries_2012.json', function( error, data ) {
 
-  graph.nodes.forEach(function(d, i) {
-    graph.nodes.forEach(function(e, j) {
+  graph.nodes.forEach(function( d, i ) {
+    graph.nodes.forEach(function( e, j ) {
       if ( i !== j )
-        graph.links.push({'source': i, 'target': j})
+        graph.links.push( { 'source': i, 'target': j } )
     })
   })
 
@@ -36,8 +37,8 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
       .on( 'start', function( d ) {} )
       .on( 'end', function( d ) {} )
 
-  function tick(d) {
-    graphUpdate(0);
+  function tick( d ) {
+    graphUpdate( 0 );
   }
 
   function random_layout() {
@@ -45,8 +46,8 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
     force.stop();
 
     graph.nodes.forEach(function(d, i) {
-      d.x = width/4 + 2*width*Math.random()/4;
-      d.y = height/4 + 2*height*Math.random()/4;
+      d.x = width / 4 + 2 * width * Math.random() / 4;
+      d.y = height / 4 + 2 * height * Math.random() / 4;
     })
 
     graphUpdate(500);
@@ -75,8 +76,11 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
     force.stop();
 
     graph.nodes.forEach(function(d, i) {
-      d.y = height/2 + d.cat*20;
+      d.x = margin.left;
+      d.y = height - yScale( d.population ) + margin.top;
     })
+
+    console.log( graph.nodes );
 
     graphUpdate(500);
   }
@@ -181,6 +185,11 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
         class: 'node-label'
       });
 
+  function setYDomain() {
+    yScale.domain( [ 0, d3.max( graph.nodes, function( d ) { return d.population } ) ] );
+  }
+
+  setYDomain();
   forceLayout();
 
 });
