@@ -1,0 +1,65 @@
+  /* LAYOUT */
+
+  body {
+    margin: 0 auto;
+    padding: 40px;
+    font-family: sans-serif;
+  }
+
+
+  /* FORM */
+
+  form {
+    margin-bottom: 20px;
+  }
+
+  fieldset {
+    border-width: 0;
+    padding-left: 0;
+  }
+
+  legend {
+    display: inline-block;
+    font-weight: 700;
+  }
+
+  label:not(:first-of-type) {
+    margin-left: 10px;
+  }
+
+  .slider {
+    margin: 0;
+  }
+
+  .slider-label {
+    margin: 0;
+    vertical-align: 2px;
+  }
+
+  input {
+    margin-right: 5px;
+  }
+
+  .chk {
+    vertical-align: 1.5px;
+  }
+
+
+  /* Graph */
+  .node-mark {
+    fill: #DDDDDD;
+  }
+
+  .node-label {
+    alignment-baseline: central;
+    font-weight: 300;
+    font-size: 10px;
+  }
+
+  .link {
+    stroke: gray;
+    stroke-width: .8px;
+  }
+
+
+
