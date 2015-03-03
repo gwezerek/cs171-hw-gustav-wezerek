@@ -1,6 +1,6 @@
 // GLOBAL MISC
 // =============================================
-var yScaleEncoding, xScaleEncoding, sortingDimension, continentsGrouping, continentCentersCircular, nestedData;
+var yScaleEncoding, xScaleEncoding, sortingDimension, continentsGrouping, continentCentersCircular, nestedData, nodes1995to2012, links1995to2012, nodes2012, links2012;
 
 
 // BAR CHART SETUP
@@ -190,6 +190,8 @@ function drawViz( error, data, fullData ) {
   function initChart() {
     continentCentersCircular = getContinentCentersCircular();
     lineLayout();
+    prep1995to2012();
+    prep2012();
   }
 
   function graphUpdate(duration) {
@@ -292,7 +294,38 @@ function drawViz( error, data, fullData ) {
     }
   }
 
+  function prep1995to2012() {
+    nodes1995to2012 = graph.nodes.forEach( function( d, i ) {
+      graph.nodes.forEach( function( e, j ) {
+        if ( i !== j )
+          graph.links.push( { 'source': i, 'target': j } )
+      })
+    });
+
+    links1995to2012 = data.forEach( function( value, i ) {
+      graph.nodes.push( value );
+    });
+  }
+
+  function prep2012() {
+    nodes2012 = graph.nodes.forEach( function( d, i ) {
+      graph.nodes.forEach( function( e, j ) {
+        if ( i !== j )
+          graph.links.push( { 'source': i, 'target': j } )
+      })
+    });
+
+    // Set links
+    links2012 = data.forEach( function( value, i ) {
+      graph.nodes.push( value );
+    });
+  }
+
   function pick1995to2012() {
+    graph.nodes = [];
+
+    console.log( fullData );
+
 
   }
 
@@ -320,15 +353,18 @@ function drawViz( error, data, fullData ) {
     //     .on( 'tick', tick );
 
     link = svg.selectAll( '.link' )
-        .data(graph.links);
+        .data(graph.links)
+      .enter().append( 'line' )
+        .attr( 'class', 'link' );;
 
-    link.enter().append( 'line' )
-        .attr( 'class', 'link' )
+    link.exit().remove();
 
     node = svg.selectAll( '.node' )
         .data(graph.nodes)
-      .enter()
-        .append( 'g' ).attr( 'class', 'node' );
+      .enter().append( 'g' )
+        .attr( 'class', 'node' );
+
+    node.exit().remove();
 
     node.append( 'circle' )
         .attr( 'r', nodeR )
