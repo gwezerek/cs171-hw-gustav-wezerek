@@ -1,6 +1,6 @@
 // GLOBAL MISC
 // =============================================
-var yScaleEncoding, xScaleEncoding, sortingDimension, continentsGrouping, continentCentersCircular;
+var yScaleEncoding, xScaleEncoding, sortingDimension, continentsGrouping, continentCentersCircular, nestedData;
 
 
 // BAR CHART SETUP
@@ -159,10 +159,17 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
           .links( graph.links )
           .on( 'tick', horizontalTick )
           .start();
-    } else {
+    }
+    if ( continentsGrouping === 'radial' ) {
       force.nodes( graph.nodes )
           .links( graph.links )
           .on( 'tick', circularTick )
+          .start();
+    }
+    if ( continentsGrouping === 'double' ) {
+      force.nodes( graph.nodes )
+          .links( graph.links )
+          .on( 'tick', doubleTick )
           .start();
     }
   }
@@ -206,50 +213,43 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
 
   function circularTick( e ) {
     graph.nodes.forEach( function( d, i ) {
-      var target = continentCentersCircular[ d.continent ]
-      d.x += ( target.x - d.x ) * 0.1 * e.alpha;
-      d.y += ( target.y - d.y ) * 0.1 * e.alpha;
+      var target = continentCentersCircular[ d.continent ];
+      d.x += ( target.x - d.x + width / 2) * 0.1 * e.alpha;
+      d.y += ( target.y - d.y + height / 2) * 0.1 * e.alpha;
     });
 
     graphUpdate( 0 );
   }
 
-  function getContinentCentersCircular() {
-
-    var nested = d3.nest()
-      .key( function( d ) { return d.continent; } )
-      .entries( graph.nodes );
-
-    var continentCounts =  [
-      nested[ 0 ].values.length,
-      nested[ 1 ].values.length,
-      nested[ 2 ].values.length,
-      nested[ 3 ].values.length,
-      nested[ 4 ].values.length
-    ];
-
-    var pie = d3.layout.pie();
-
-    var r = Math.min( height, width ) / 2;
+  function doubleTick( e ) {
+    var r = Math.min( height, width ) / 7;
 
     var arc = d3.svg.arc()
-        .innerRadius( 0 )
-        .outerRadius( r );
+        .outerRadius( r);
 
-    var arcCentroids = [];
+    var pie = d3.layout.pie()
+        .value( function( d, i ) {
+          return 1;  // We want an equal pie share/slice for each point
+        });
 
-    pie( continentCounts ).map( function( d, i ) {
-      arcCentroids.push( arc.centroid( d ) );
-    })
+    nestedData.forEach( function( continent, i ){
+      var target = continentCentersCircular[ continent.key ];
+      var subSelect = graph.nodes.filter( function( d, j ) {
+        return d.continent === continent.key ;
+      });
+      subSelect = pie( subSelect ).map( function( d, j ) {
+          // Needed to caclulate the centroid
+          d.innerRadius = 0;
+          d.outerRadius = r;
 
-    return {
-      'Africa': { 'x': arcCentroids[0][0], 'y': arcCentroids[0][1] },
-      'Europe': { 'x': arcCentroids[1][0], 'y': arcCentroids[1][1] },
-      'Asia': { 'x': arcCentroids[2][0], 'y': arcCentroids[2][1] },
-      'Americas': { 'x': arcCentroids[3][0], 'y': arcCentroids[3][1] },
-      'Oceania': { 'x': arcCentroids[4][0], 'y': arcCentroids[4][1] }
-    };
+          d.data.x = ( arc.centroid( d )[ 0 ] + target.x + width / 2 );
+          d.data.y = ( arc.centroid( d )[ 1 ] + target.y + height / 2 );
 
+          return d.data;
+      });
+    });
+
+    graphUpdate( 100 );
   }
 
   function setLineEncoding() {
@@ -275,7 +275,7 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
   }
 
   function selectOptionRadio( clicked ) {
-    if ( clicked.tagName === 'option' ) {
+    if ( clicked.tagName === 'SELECT' ) {
       clicked.previousElementSibling.childNodes[0].checked = true;
     }
   }
@@ -300,6 +300,42 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
       .attr('r', function(d) {
         return Math.sqrt(node_scale(d.cat));
       });
+  }
+
+  function getContinentCentersCircular() {
+    nestedData = d3.nest()
+      .key( function( d ) { return d.continent; } )
+      .entries( graph.nodes );
+
+    var continentCounts =  [
+      nestedData[ 0 ].values.length,
+      nestedData[ 1 ].values.length,
+      nestedData[ 2 ].values.length,
+      nestedData[ 3 ].values.length,
+      nestedData[ 4 ].values.length
+    ];
+
+    var pie = d3.layout.pie();
+
+    var r = Math.min( height, width ) / 2;
+
+    var arc = d3.svg.arc()
+        .innerRadius( 0 )
+        .outerRadius( r );
+
+    var arcCentroids = [];
+
+    pie( continentCounts ).map( function( d, i ) {
+      arcCentroids.push( arc.centroid( d ) );
+    })
+
+    return {
+      'Africa': { 'x': arcCentroids[0][0], 'y': arcCentroids[0][1] },
+      'Europe': { 'x': arcCentroids[1][0], 'y': arcCentroids[1][1] },
+      'Asia': { 'x': arcCentroids[2][0], 'y': arcCentroids[2][1] },
+      'Americas': { 'x': arcCentroids[3][0], 'y': arcCentroids[3][1] },
+      'Oceania': { 'x': arcCentroids[4][0], 'y': arcCentroids[4][1] }
+    };
   }
 
 
