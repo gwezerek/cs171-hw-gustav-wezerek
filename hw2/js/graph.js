@@ -7,7 +7,7 @@ var yScaleEncoding, xScaleEncoding, sortingDimension, continentsGrouping;
 // =============================================
 var nodeR = 3;
 var margin = { top: 10, bottom: 10, left: nodeR, right: 50 };
-var width = 700 - margin.left - margin.right;
+var width = 900 - margin.left - margin.right;
 var height = 1100 - margin.top - margin.bottom;
 
 var svg = d3.select( 'body' ).append( 'svg' )
@@ -21,6 +21,13 @@ var nb_cat = 10;
 var node_scale = d3.scale.linear().domain([0, nb_cat]).range([5, 50]);
 var yScale = d3.scale.linear().range( [ 0, height ] );
 var xScale = d3.scale.linear().range( [ 0, width ] );
+var continentCenters = {
+  'Africa': {x: width / 5, y: height / 2},
+  'Europe': {x: 2 * width / 5, y: height / 2},
+  'Asia': {x: 3 * width / 5, y: height / 2},
+  'Americas': {x: 4 * width / 5, y: height / 2},
+  'Oceania': {x: width, y: height / 2}
+}
 
 
 // LOAD DATA, DRAW VIZ
@@ -206,21 +213,24 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
 
   function horizontalTick( e ) {
 
-    var continentCenters = {
-      'Africa': {x: @width / 3, y: @height / 2},
-      'Europe': {x: @width / 2, y: @height / 2},
-      'Asia': {x: 2 * @width / 3, y: @height / 2},
-      'Americas': {x: 2 * @width / 3, y: @height / 2},
-      'Oceania': {x: 2 * @width / 3, y: @height / 2}
-    }
+    graph.nodes.forEach( function( d, i ) {
+      var target = continentCenters[ d.continent ]
+      d.x += ( target.x - d.x ) * 0.1 * e.alpha;
+      d.y += ( target.y - d.y ) * 0.1 * e.alpha;
+    });
 
     // Push different nodes in different directions for clustering.
-      var k = 6 * e.alpha;
-      graph.nodes.forEach(function(o, i) {
-        o.y += i & 1 ? k : -k;
-        o.x += i & 2 ? k : -k;
-      });
-      graphUpdate( 0 );
+    // var k = 6 * e.alpha;
+    // graph.nodes.forEach(function(o, i) {
+    //   o.y += i & 1 ? k : -k;
+    //   o.x += i & 2 ? k : -k;
+    // });
+
+    // graph.nodes.forEach(moveTowardCenter(e.alpha))
+    //   .attr("cx", (d) -> d.x)
+    //   .attr("cy", (d) -> d.y);
+
+    graphUpdate( 0 );
   }
 
   function setLineEncoding() {
