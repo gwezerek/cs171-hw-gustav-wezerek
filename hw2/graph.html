@@ -7,7 +7,6 @@
 <body>
   <h1>Countries by Position</h1>
   <form>
-    <fieldset>
       <legend>Layout</legend>
       <div class="form-label-wrap"><label id="js-layout-line" class="form-label"><input type="radio" name="layout" value="line" checked>Line</label></div>
       <div class="form-label-wrap">
@@ -42,10 +41,13 @@
           <option class="js-opt-continents-layout" value="double">Double circle</option>
         </select>
       </div>
-    </fieldset>
+      <div class="form-label-wrap">
+        <label class="form-label"><input id="js-layout-edges" type="radio" name="layout" value="edges">Edges</label>
+      </div>
   </form>
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/queue.v1.min.js"></script>
 <script type="text/javascript" src="js/graph.js"></script>
 </body>
 

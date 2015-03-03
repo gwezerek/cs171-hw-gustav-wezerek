@@ -30,9 +30,14 @@ var continentCentersHorizontal = {
   'Oceania': { x: width, y: height /  2}
 }
 
+queue()
+  .defer(d3.json, 'data/countries_2012.json')
+  .defer(d3.json, 'data/countries_1995_2012.json')
+  .await(drawViz);
+
 // LOAD DATA, DRAW VIZ
 // =============================================
-d3.json( 'data/countries_2012.json', function( error, data ) {
+function drawViz( error, data, fullData ) {
 
   // Init
   // initChart();
@@ -42,11 +47,11 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
       if ( i !== j )
         graph.links.push( { 'source': i, 'target': j } )
     })
-  })
+  });
 
   data.forEach( function( value, i ) {
     graph.nodes.push( value );
-  })
+  });
 
   // Generate the force layout
   var force = d3.layout.force()
@@ -174,6 +179,10 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
     }
   }
 
+  function edgeLayout() {
+    force.stop();
+  }
+
 
   // HELPERS
   // =============================================
@@ -272,6 +281,65 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
 
   function setYDomain() {
     yScale.domain( [ d3.min( graph.nodes, function( d ) { return d[ yScaleEncoding ] } ), d3.max( graph.nodes, function( d ) { return d[ yScaleEncoding ] } ) ] );
+  }
+
+  function dispatchDatasetUpdate( clicked ) {
+    if ( clicked.value === 'edges' ) {
+      console.log('meow');
+      pick1995to2012();
+    } else {
+      pick2012();
+    }
+  }
+
+  function pick1995to2012() {
+
+  }
+
+  function pick2012() {
+
+    graph.nodes = [];
+
+    // Set nodes
+    graph.nodes.forEach( function( d, i ) {
+      graph.nodes.forEach( function( e, j ) {
+        if ( i !== j )
+          graph.links.push( { 'source': i, 'target': j } )
+      })
+    });
+
+    // Set links
+    data.forEach( function( value, i ) {
+      graph.nodes.push( value );
+    });
+
+    // var force = d3.layout.force()
+    //     .size( [ width, height ] )
+    //     .charge( -50 )
+    //     .linkDistance( 10 )
+    //     .on( 'tick', tick );
+
+    link = svg.selectAll( '.link' )
+        .data(graph.links);
+
+    link.enter().append( 'line' )
+        .attr( 'class', 'link' )
+
+    node = svg.selectAll( '.node' )
+        .data(graph.nodes)
+      .enter()
+        .append( 'g' ).attr( 'class', 'node' );
+
+    node.append( 'circle' )
+        .attr( 'r', nodeR )
+        .attr( 'class', 'node-mark' );
+
+    node.append( 'text' )
+        .text( function(d) { return d.name; })
+        .attr({
+          x: nodeR + 3,
+          class: 'node-label'
+        });
   }
 
   function selectOptionRadio( clicked ) {
@@ -380,4 +448,10 @@ d3.json( 'data/countries_2012.json', function( error, data ) {
     continentsLayout();
   });
 
-});
+  // Edges
+  d3.selectAll( '#js-layout-edges' ).on( 'change', function() {
+    dispatchDatasetUpdate( this );
+    edgeLayout();
+  });
+
+};
