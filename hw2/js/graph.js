@@ -125,11 +125,40 @@ function drawViz( error, data, fullData ) {
           .start();
     }
     if ( continentsGrouping === 'double' ) {
-      force.nodes( graph.nodes )
-          .links( graph.links )
-          .on( 'tick', doubleTick )
-          .start();
+      doubleLayout();
     }
+  }
+
+  function doubleLayout() {
+    var r = Math.min( height, width ) / 7;
+
+    var arc = d3.svg.arc()
+        .outerRadius( r );
+
+    var pie = d3.layout.pie()
+        .value( function() {
+          return 1;  // We want an equal pie share/slice for each point
+        });
+
+    nestedData.forEach( function( continent ){
+      var target = continentCentersCircular[ continent.key ];
+      var subSelect = graph.nodes.filter( function( d ) {
+        return d.continent === continent.key ;
+      });
+
+      pie( subSelect ).map( function( d ) {
+          // Needed to caclulate the centroid
+          d.innerRadius = 0;
+          d.outerRadius = r;
+
+          d.data.x = ( arc.centroid( d )[ 0 ] + target.x + width / 2 );
+          d.data.y = ( arc.centroid( d )[ 1 ] + target.y + height / 2 );
+
+          return d.data;
+      });
+    });
+
+    graphUpdate( 500 );
   }
 
   function edgeLayout() {
@@ -137,8 +166,9 @@ function drawViz( error, data, fullData ) {
 
     force.nodes( graph.nodes )
         .links( graph.links )
-        .on( 'tick', forceCircleTick )
         .start();
+
+    circleLayout();
 
     // Bind hover handlers
     node.on( 'mouseover', highlightPartners )
@@ -187,65 +217,8 @@ function drawViz( error, data, fullData ) {
   function circularTick( e ) {
     graph.nodes.forEach( function( d ) {
       var target = continentCentersCircular[ d.continent ];
-      d.x += ( target.x - d.x + width / 2) * 0.1 * e.alpha;
-      d.y += ( target.y - d.y + height / 2) * 0.1 * e.alpha;
-    });
-
-    graphUpdate( 0 );
-  }
-
-  function doubleTick( ) {
-    var r = Math.min( height, width ) / 7;
-
-    var arc = d3.svg.arc()
-        .outerRadius( r );
-
-    var pie = d3.layout.pie()
-        .value( function() {
-          return 1;  // We want an equal pie share/slice for each point
-        });
-
-    nestedData.forEach( function( continent ){
-      var target = continentCentersCircular[ continent.key ];
-      var subSelect = graph.nodes.filter( function( d ) {
-        return d.continent === continent.key ;
-      });
-      subSelect = pie( subSelect ).map( function( d ) {
-          // Needed to caclulate the centroid
-          d.innerRadius = 0;
-          d.outerRadius = r;
-
-          d.data.x = ( arc.centroid( d )[ 0 ] + target.x + width / 2 );
-          d.data.y = ( arc.centroid( d )[ 1 ] + target.y + height / 2 );
-
-          return d.data;
-      });
-    });
-
-    graphUpdate( 100 );
-  }
-
-  function forceCircleTick() {
-    var r = Math.min( height, width ) / 2;
-
-    var arc = d3.svg.arc()
-        .outerRadius( r );
-
-    var pie = d3.layout.pie()
-        .value( function() {
-          return 1;  // We want an equal pie share/slice for each point
-        });
-
-    graph.nodes = pie( graph.nodes ).map( function( d ) {
-      // Needed to caclulate the centroid
-      d.innerRadius = 0;
-      d.outerRadius = r;
-
-      // Building the data object we are going to return
-      d.data.x = arc.centroid( d )[ 0 ] + width / 2;
-      d.data.y = arc.centroid( d )[ 1 ] + height / 2;
-
-      return d.data;
+      d.x += ( target.x - d.x + width / 2 ) * 0.1 * e.alpha;
+      d.y += ( target.y - d.y + height / 2 ) * 0.1 * e.alpha;
     });
 
     graphUpdate( 0 );
@@ -285,7 +258,10 @@ function drawViz( error, data, fullData ) {
   function updateGraph() {
     // Enter, update, exit links
     link = linkWrap.selectAll( '.link' )
-        .data( graph.links );
+        .data( graph.links )
+
+    link.enter().append( 'line' )
+        .attr( 'class', 'link' );
 
     link.exit().remove();
 
@@ -432,6 +408,11 @@ function drawViz( error, data, fullData ) {
     };
   }
 
+  function unbindHover() {
+    node.on( 'mouseover', null )
+        .on( 'mouseout', null );
+  }
+
 
   // HANDLERS
   // =============================================
@@ -442,6 +423,7 @@ function drawViz( error, data, fullData ) {
     setLineEncoding();
     setYDomain();
     lineLayout();
+    unbindHover();
   });
 
   // Encoded line plot
@@ -451,6 +433,7 @@ function drawViz( error, data, fullData ) {
     setLineEncoding();
     setYDomain();
     encodedLineLayout();
+    unbindHover();
   });
 
   // Scatterplot
@@ -461,6 +444,7 @@ function drawViz( error, data, fullData ) {
     setXDomain();
     setYDomain();
     scatterLayout();
+    unbindHover();
   });
 
   // Circle
@@ -469,6 +453,7 @@ function drawViz( error, data, fullData ) {
     selectOptionRadio( this );
     setSortingDimension();
     circleLayout();
+    unbindHover();
   });
 
   // Continents
@@ -477,6 +462,7 @@ function drawViz( error, data, fullData ) {
     selectOptionRadio( this );
     setContinentsGrouping();
     continentsLayout();
+    unbindHover();
   });
 
   // Edges
