@@ -389,26 +389,21 @@ function drawViz( error, data, fullData ) {
   }
 
   function highlightPartners( d ) {
-    console.log('on');
+    svg.classed( 'highlighting', true );
+
     node.each( function( n ) { n.target = n.source = false; });
 
-    link.classed( 'link-target', function( l ) { if ( l.target === d ) return l.source.source = true; } )
-        .classed( 'link-source', function( l ) { if ( l.source === d ) return l.target.target = true; } )
+    link.classed( 'link-source', function( l ) { if ( l.source === d ) return l.target.target = true; } )
       .filter( function( l ) { return l.target === d || l.source === d; } )
         .each( function() { this.parentNode.appendChild( this ); } );
 
-    node.classed( 'node-target', function( n ) { return n.target; } )
-        .classed( 'node-source', function( n ) { return n.source; }) ;
+    node.classed( 'node-target', function( n ) { return n.target; } );
   }
 
   function hidePartners() {
-        console.log('off');
-
-    link.classed( 'link-target', false )
-        .classed( 'link-source', false );
-
-    node.classed( 'node-target', false )
-        .classed( 'node-source', false );
+    svg.classed( 'highlighting', false );
+    link.classed( 'link-source', false );
+    node.classed( 'node-target', false );
   }
 
   function getContinentCentersCircular() {

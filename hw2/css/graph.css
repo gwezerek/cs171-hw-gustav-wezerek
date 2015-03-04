@@ -64,19 +64,37 @@ input {
   pointer-events: none;
 }
 
-.node:hover .node-mark {
-  fill: black;
+.highlighting .node-label {
+  fill: #eee;
+  opacity: 0.2;
 }
 
-.node:hover .node-label,
-.node-source .node-label,
-.node-target .node-label {
-  font-weight: 700;
+.highlighting .node-mark {
+  stroke: #eee;
+  opacity: 0.2;
 }
 
-.link-source,
-.link-target {
+.highlighting .link {
+  stroke: #eee;
+  opacity: 0.2;
+}
+
+.highlighting .node:hover .node-mark,
+.highlighting .node-target .node-mark {
   stroke: black;
+  opacity: 1;
+}
+
+.highlighting .node:hover .node-label,
+.highlighting .node-target .node-label {
+  font-weight: 700;
+  fill: black;
+  opacity: 1;
+}
+
+.highlighting .link-source {
+  stroke: black;
+  opacity: 1;
 }
 
 
