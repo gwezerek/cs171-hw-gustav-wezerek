@@ -1,6 +1,8 @@
+'use strict';
+
 // GLOBAL MISC
 // =============================================
-var yScaleEncoding, xScaleEncoding, sortingDimension, continentsGrouping, continentCentersCircular, nestedData, countryIDMap, force, node, circles, labels;
+var yScaleEncoding, xScaleEncoding, sortingDimension, continentsGrouping, continentCentersCircular, nestedData, countryIDMap, force, node, circles, labels, link;
 
 
 // BAR CHART SETUP
@@ -17,23 +19,18 @@ var linkWrap = svg.append( 'g' )
     .attr( 'class', 'link-wrap ');
 
 
-var fill = d3.scale.category10();
 var graph = { nodes: [], links: [] };
 var graph2012 = { nodes: [], links: [] };
 var graph1995 = { nodes: [], links: [] };
-var nb_nodes = 120;
-var nb_cat = 10;
-var node_scale = d3.scale.linear().domain([0, nb_cat]).range([5, 50]);
 var yScale = d3.scale.linear().range( [ 0, height ] );
 var xScale = d3.scale.linear().range( [ 0, width ] );
-var continentScale = d3.scale.ordinal().rangeRoundBands( [ 0, width ], 0.5 );
 var continentCentersHorizontal = {
   'Africa': { x: width / 5, y: height / 2 },
   'Europe': { x: 2 * width / 5, y: height / 2 },
   'Asia': { x: 3 * width / 5, y: height / 2 },
   'Americas': { x: 4 * width / 5, y: height / 2 },
   'Oceania': { x: width, y: height /  2}
-}
+};
 
 queue()
   .defer(d3.json, 'data/countries_2012.json')
@@ -64,7 +61,7 @@ function drawViz( error, data, fullData ) {
   function encodedLineLayout() {
     force.stop();
 
-    graph.nodes.forEach(function(d, i) {
+    graph.nodes.forEach(function( d ) {
       d.x = margin.left;
       d.y = height - yScale( d[yScaleEncoding] ) + margin.top;
     });
@@ -75,9 +72,9 @@ function drawViz( error, data, fullData ) {
   function scatterLayout() {
     force.stop();
 
-    graph.nodes.forEach(function(d, i) {
-      d.x = xScale( d[xScaleEncoding] ) + margin.left;
-      d.y = height - yScale( d[yScaleEncoding] ) + margin.top;
+    graph.nodes.forEach(function( d ) {
+      d.x = xScale( d[ xScaleEncoding ] ) + margin.left;
+      d.y = height - yScale( d[ yScaleEncoding ] ) + margin.top;
     });
 
     graphUpdate(500);
@@ -93,11 +90,11 @@ function drawViz( error, data, fullData ) {
 
     var pie = d3.layout.pie()
         .sort( function( a, b ) { return a[ sortingDimension ] - b[ sortingDimension ];} ) // Sorting by categories
-        .value( function( d, i ) {
+        .value( function() {
           return 1;  // We want an equal pie share/slice for each point
         });
 
-    graph.nodes = pie( graph.nodes ).map( function( d, i ) {
+    graph.nodes = pie( graph.nodes ).map( function( d ) {
       // Needed to caclulate the centroid
       d.innerRadius = 0;
       d.outerRadius = r;
@@ -177,12 +174,8 @@ function drawViz( error, data, fullData ) {
         });
   }
 
-  function tick( e ) {
-    graphUpdate( 0 );
-  }
-
   function horizontalTick( e ) {
-    graph.nodes.forEach( function( d, i ) {
+    graph.nodes.forEach( function( d ) {
       var target = continentCentersHorizontal[ d.continent ];
       d.x += ( target.x - d.x ) * 0.1 * e.alpha;
       d.y += ( target.y - d.y ) * 0.1 * e.alpha;
@@ -192,7 +185,7 @@ function drawViz( error, data, fullData ) {
   }
 
   function circularTick( e ) {
-    graph.nodes.forEach( function( d, i ) {
+    graph.nodes.forEach( function( d ) {
       var target = continentCentersCircular[ d.continent ];
       d.x += ( target.x - d.x + width / 2) * 0.1 * e.alpha;
       d.y += ( target.y - d.y + height / 2) * 0.1 * e.alpha;
@@ -201,23 +194,23 @@ function drawViz( error, data, fullData ) {
     graphUpdate( 0 );
   }
 
-  function doubleTick( e ) {
+  function doubleTick( ) {
     var r = Math.min( height, width ) / 7;
 
     var arc = d3.svg.arc()
         .outerRadius( r );
 
     var pie = d3.layout.pie()
-        .value( function( d, i ) {
+        .value( function() {
           return 1;  // We want an equal pie share/slice for each point
         });
 
-    nestedData.forEach( function( continent, i ){
+    nestedData.forEach( function( continent ){
       var target = continentCentersCircular[ continent.key ];
-      var subSelect = graph.nodes.filter( function( d, j ) {
+      var subSelect = graph.nodes.filter( function( d ) {
         return d.continent === continent.key ;
       });
-      subSelect = pie( subSelect ).map( function( d, j ) {
+      subSelect = pie( subSelect ).map( function( d ) {
           // Needed to caclulate the centroid
           d.innerRadius = 0;
           d.outerRadius = r;
@@ -239,11 +232,11 @@ function drawViz( error, data, fullData ) {
         .outerRadius( r );
 
     var pie = d3.layout.pie()
-        .value( function( d, i ) {
+        .value( function() {
           return 1;  // We want an equal pie share/slice for each point
         });
 
-    graph.nodes = pie( graph.nodes ).map( function( d, i ) {
+    graph.nodes = pie( graph.nodes ).map( function( d ) {
       // Needed to caclulate the centroid
       d.innerRadius = 0;
       d.outerRadius = r;
@@ -255,7 +248,7 @@ function drawViz( error, data, fullData ) {
       return d.data;
     });
 
-    graphUpdate( 100 );
+    graphUpdate( 0 );
   }
 
   function setLineEncoding() {
@@ -273,11 +266,11 @@ function drawViz( error, data, fullData ) {
   }
 
   function setXDomain() {
-    xScale.domain( [ d3.min( graph.nodes, function( d ) { return d[ xScaleEncoding ] } ), d3.max( graph.nodes, function( d ) { return d[ xScaleEncoding ] } ) ] );
+    xScale.domain( [ d3.min( graph.nodes, function( d ) { return d[ xScaleEncoding ]; } ), d3.max( graph.nodes, function( d ) { return d[ xScaleEncoding ]; } ) ] );
   }
 
   function setYDomain() {
-    yScale.domain( [ d3.min( graph.nodes, function( d ) { return d[ yScaleEncoding ] } ), d3.max( graph.nodes, function( d ) { return d[ yScaleEncoding ] } ) ] );
+    yScale.domain( [ d3.min( graph.nodes, function( d ) { return d[ yScaleEncoding ]; } ), d3.max( graph.nodes, function( d ) { return d[ yScaleEncoding ]; } ) ] );
   }
 
   function dispatchDatasetUpdate( clicked ) {
@@ -293,9 +286,6 @@ function drawViz( error, data, fullData ) {
     // Enter, update, exit links
     link = linkWrap.selectAll( '.link' )
         .data( graph.links );
-
-    var linkEnter = link.enter().append( 'line' )
-        .attr( 'class', 'link' );;
 
     link.exit().remove();
 
@@ -329,7 +319,7 @@ function drawViz( error, data, fullData ) {
   }
 
   function prep2012() {
-    data.forEach( function( value, i ) {
+    data.forEach( function( value ) {
       graph2012.nodes.push( value );
     });
   }
@@ -338,7 +328,7 @@ function drawViz( error, data, fullData ) {
     var data1995 = [];
 
     // Flatten to 1995
-    fullData.forEach( function( d, i ) {
+    fullData.forEach( function( d ) {
       var newEntry = getYear( d.years, 1995 );
       for ( var key in d ) {
         newEntry[ key ] = d[ key ];
@@ -351,10 +341,10 @@ function drawViz( error, data, fullData ) {
       graph1995.nodes.push( d );
 
       // Add links
-      d.top_partners.forEach( function( e, j ) {
+      d.top_partners.forEach( function( e ) {
         var mappedIndex = countryIDMap[ String( e.country_id ) ];
         if ( mappedIndex ) {
-          graph1995.links.push( { 'source': i, 'target': mappedIndex } )
+          graph1995.links.push( { 'source': i, 'target': mappedIndex } );
         }
       });
     });
@@ -429,9 +419,9 @@ function drawViz( error, data, fullData ) {
 
     var arcCentroids = [];
 
-    pie( continentCounts ).map( function( d, i ) {
+    pie( continentCounts ).map( function( d ) {
       arcCentroids.push( arc.centroid( d ) );
-    })
+    });
 
     return {
       'Africa': { 'x': arcCentroids[0][0], 'y': arcCentroids[0][1] },
@@ -495,4 +485,4 @@ function drawViz( error, data, fullData ) {
     edgeLayout();
   });
 
-};
+}
