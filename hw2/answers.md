@@ -1,4 +1,5 @@
 # Homework 2 Answers
+
 ### 0.1 What is the meaning of the horizontal and vertical position of the nodes? Give examples of datasets particularly well suited to organize data this way.
 The horizontal and vertical position don't encode anything on their own. Rather, the position of the nodes to each other on the 2D plane visualizes the relatedness of the data. You could use a force-directed graph to visualize, say, the co-occurence of characters in _Les Misérables_ or the co-occurence of countries' exports.
 
@@ -27,3 +28,9 @@ Note, I'm working under the assumption that we have to stick with a radial netwo
 * You could group the countries by continent and space those groups out, similar to the pie force layout. That would help users identify where their country of interest is.
 * You could eliminate the edge marks altogether except on hover, as in the graph's current state you can't see any patterns beforehand anyway. This would improve the signal to noise ratio on hover, though it might introduce confusion when the user first encounters the graph.
 * You could add a second, thicker white line behind the selected links to help them pop out. Same with adding a hard, white text-shadow to help make the labels pop. I actually had to "interactivize" a horrible, poorly designed print graphic just like this for FastCompany (http://www.fastcodesign.com/3031349/exclusive-infographic-the-great-wheel-of-food-mashups). I tried blurring the non-selected links, but browsers choked on all the SVG filtering.
+
+### Citations for code
+Libraries used:
+* [Queue.js](https://github.com/mbostock/queue)
+
+Any external code snippets noted inline

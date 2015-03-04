@@ -183,6 +183,7 @@ function drawViz( error, data, fullData ) {
     prep2012();
     graph = graph2012;
     updateGraph();
+    initForce();
     lineLayout();
 
     mapCountryIDs();
@@ -286,7 +287,9 @@ function drawViz( error, data, fullData ) {
           x: nodeR + 3,
           class: 'node-label'
         });
+  }
 
+  function initForce() {
     // Create force layout
     force = d3.layout.force()
         .size( [ width, height ] )
@@ -354,6 +357,7 @@ function drawViz( error, data, fullData ) {
     continentsGrouping = d3.select( '.js-opt-continents-layout:checked' ).node().value;
   }
 
+  // Inspired by http://bl.ocks.org/mbostock/7607999
   function highlightPartners( d ) {
     svg.classed( 'highlighting', true );
 
@@ -366,6 +370,7 @@ function drawViz( error, data, fullData ) {
     node.classed( 'node-target', function( n ) { return n.target; } );
   }
 
+  // Inspired by http://bl.ocks.org/mbostock/7607999
   function hidePartners() {
     svg.classed( 'highlighting', false );
     link.classed( 'link-source', false );
