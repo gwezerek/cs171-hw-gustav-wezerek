@@ -1,6 +1,6 @@
 // GLOBAL MISC
 // =============================================
-var yScaleEncoding, xScaleEncoding, sortingDimension, continentsGrouping, continentCentersCircular, nestedData, nodes1995to2012, links1995to2012, nodes2012, links2012;
+var yScaleEncoding, xScaleEncoding, sortingDimension, continentsGrouping, continentCentersCircular, nestedData, countryIDMap;
 
 
 // BAR CHART SETUP
@@ -16,6 +16,8 @@ var svg = d3.select( 'body' ).append( 'svg' )
 
 var fill = d3.scale.category10();
 var graph = { nodes: [], links: [] };
+var graph2012 = { nodes: [], links: [] };
+var graph1995 = { nodes: [], links: [] };
 var nb_nodes = 120;
 var nb_cat = 10;
 var node_scale = d3.scale.linear().domain([0, nb_cat]).range([5, 50]);
@@ -41,13 +43,6 @@ function drawViz( error, data, fullData ) {
 
   // Init
   // initChart();
-
-  graph.nodes.forEach(function( d, i ) {
-    graph.nodes.forEach(function( e, j ) {
-      if ( i !== j )
-        graph.links.push( { 'source': i, 'target': j } )
-    })
-  });
 
   data.forEach( function( value, i ) {
     graph.nodes.push( value );
@@ -190,8 +185,9 @@ function drawViz( error, data, fullData ) {
   function initChart() {
     continentCentersCircular = getContinentCentersCircular();
     lineLayout();
-    prep1995to2012();
+    mapCountryIDs();
     prep2012();
+    prep1995();
   }
 
   function graphUpdate(duration) {
@@ -287,77 +283,22 @@ function drawViz( error, data, fullData ) {
 
   function dispatchDatasetUpdate( clicked ) {
     if ( clicked.value === 'edges' ) {
-      console.log('meow');
-      pick1995to2012();
+      graph = graph1995;
     } else {
-      pick2012();
+      graph = graph2012;
     }
+    // console.log(graph);
+    // updateGraph();
   }
 
-  function prep1995to2012() {
-    nodes1995to2012 = graph.nodes.forEach( function( d, i ) {
-      graph.nodes.forEach( function( e, j ) {
-        if ( i !== j )
-          graph.links.push( { 'source': i, 'target': j } )
-      })
-    });
-
-    links1995to2012 = data.forEach( function( value, i ) {
-      graph.nodes.push( value );
-    });
-  }
-
-  function prep2012() {
-    nodes2012 = graph.nodes.forEach( function( d, i ) {
-      graph.nodes.forEach( function( e, j ) {
-        if ( i !== j )
-          graph.links.push( { 'source': i, 'target': j } )
-      })
-    });
-
-    // Set links
-    links2012 = data.forEach( function( value, i ) {
-      graph.nodes.push( value );
-    });
-  }
-
-  function pick1995to2012() {
-    graph.nodes = [];
-
-    console.log( fullData );
-
-
-  }
-
-  function pick2012() {
-
-    graph.nodes = [];
-
-    // Set nodes
-    graph.nodes.forEach( function( d, i ) {
-      graph.nodes.forEach( function( e, j ) {
-        if ( i !== j )
-          graph.links.push( { 'source': i, 'target': j } )
-      })
-    });
-
-    // Set links
-    data.forEach( function( value, i ) {
-      graph.nodes.push( value );
-    });
-
-    // var force = d3.layout.force()
-    //     .size( [ width, height ] )
-    //     .charge( -50 )
-    //     .linkDistance( 10 )
-    //     .on( 'tick', tick );
-
+  function updateGraph() {
     link = svg.selectAll( '.link' )
-        .data(graph.links)
-      .enter().append( 'line' )
+        .data( graph.links );
+
+    linkEnter = link.enter().append( 'line' )
         .attr( 'class', 'link' );;
 
-    link.exit().remove();
+    linkEnter.exit().remove();
 
     node = svg.selectAll( '.node' )
         .data(graph.nodes)
@@ -376,6 +317,52 @@ function drawViz( error, data, fullData ) {
           x: nodeR + 3,
           class: 'node-label'
         });
+  }
+
+  function prep2012() {
+    data.forEach( function( value, i ) {
+      graph2012.nodes.push( value );
+    });
+  }
+
+  function prep1995() {
+    var data1995 = [];
+
+    // Flatten to 1995
+    fullData.forEach( function( d, i ) {
+      var newEntry = getYear( d.years, 1995 );
+      for ( var key in d ) {
+        newEntry[ key ] = d[ key ];
+      }
+      data1995.push( newEntry );
+    });
+
+    data1995.forEach( function( d, i ) {
+      // Add nodes
+      graph1995.nodes.push( d );
+
+      // Add links
+      d.top_partners.forEach( function( e, j ) {
+        var mappedIndex = countryIDMap[ String( e.country_id ) ];
+        if ( mappedIndex ) {
+          graph1995.links.push( { 'source': i, 'target': mappedIndex } )
+        }
+      });
+    });
+  }
+
+  function mapCountryIDs() {
+    countryIDMap = {};
+
+    fullData.forEach( function( value, index ) {
+      countryIDMap[ value.country_id ] = index;
+    });
+  }
+
+  function getYear( array, year ) {
+    for ( var i = 0; i < array.length; i += 1 ) {
+      if ( array[i].year === year ) return array[i];
+    }
   }
 
   function selectOptionRadio( clicked ) {
@@ -448,6 +435,7 @@ function drawViz( error, data, fullData ) {
 
   // Line plot
   d3.select( '#js-layout-line' ).on( 'change', function() {
+    dispatchDatasetUpdate( this );
     setLineEncoding();
     setYDomain();
     lineLayout();
@@ -455,6 +443,7 @@ function drawViz( error, data, fullData ) {
 
   // Encoded line plot
   d3.selectAll( '#js-select-line-scale-y, #js-layout-line-encoded' ).on( 'change', function() {
+    dispatchDatasetUpdate( this );
     selectOptionRadio( this );
     setLineEncoding();
     setYDomain();
@@ -463,6 +452,7 @@ function drawViz( error, data, fullData ) {
 
   // Scatterplot
   d3.selectAll( '#js-select-scatter-scale-y, #js-layout-scatter' ).on( 'change', function() {
+    dispatchDatasetUpdate( this );
     selectOptionRadio( this );
     setScatterEncodings();
     setXDomain();
@@ -472,6 +462,7 @@ function drawViz( error, data, fullData ) {
 
   // Circle
   d3.selectAll( '#js-layout-circle, #js-select-circle-dimensions' ).on( 'change', function() {
+    dispatchDatasetUpdate( this );
     selectOptionRadio( this );
     setSortingDimension();
     circleLayout();
@@ -479,6 +470,7 @@ function drawViz( error, data, fullData ) {
 
   // Continents
   d3.selectAll( '#js-layout-continents, #js-select-continents-layouts' ).on( 'change', function() {
+    dispatchDatasetUpdate( this );
     selectOptionRadio( this );
     setContinentsGrouping();
     continentsLayout();
