@@ -69,60 +69,70 @@ var modelData = [
         'total_export': 2036096161.9550002,
         'total_import': 2036096161.9550002,
         'country_id': 223,
+        'country_name': 'Country Name',
         'distance': 6978.278548386516
       },
       {
         'total_export': 224173637.056,
         'total_import': 2036096161.9550002,
         'country_id': 50,
+        'country_name': 'Country Name',
         'distance': 5672.672572104966
       },
       {
         'total_export': 158327929.5,
         'total_import': 2036096161.9550002,
         'country_id': 16,
+        'country_name': 'Country Name',
         'distance': 5672.672572104966
       },
       {
         'total_export': 117076297.133,
         'total_import': 2036096161.9550002,
         'country_id': 38,
+        'country_name': 'Country Name',
         'distance': 5672.672572104966
       },
       {
         'total_export': 102352390.975,
         'total_import': 2036096161.9550002,
         'country_id': 102,
+        'country_name': 'Country Name',
         'distance': 5672.672572104966
       },
       {
         'total_export': 98906529.644,
         'total_import': 2036096161.9550002,
         'country_id': 112,
+        'country_name': 'Country Name',
         'distance': 5672.672572104966
       },
       {
         'total_export': 95060953.24,
         'total_import': 2036096161.9550002,
         'country_id': 64,
+        'country_name': 'Country Name',
         'distance': 5672.672572104966
       },
       {
         'total_export': 78828771.431,
         'total_import': 2036096161.9550002,
         'country_id': 69,
+        'country_name': 'Country Name',
         'distance': 5672.672572104966
       },
       {
         'total_export': 61113059.0,
         'total_import': 2036096161.9550002,
         'country_id': 37,
+        'country_name': 'Country Name',
         'distance': 5672.672572104966
       },
       {
         'total_export': 38838947.0,
         'total_import': 2036096161.9550002,
         'country_id': 28,
+        'country_name': 'Country Name',
         'distance': 5672.672572104966
       }
     ],
@@ -179,19 +189,19 @@ var modelData = [
 
   var partnerTextNames = partnerText.append( 'p' )
       .text( function( d ){
-        return d.country_id;
+        return d.country_name;
       } )
       .attr( 'class', 'partner-text-name' );
 
   var partnerTextImports = partnerText.append( 'p' )
       .text( function( d ){
-        return 'Imports: ' + d.total_import;
+        return 'Imports: $' + toSF4( d.total_import );
       } )
       .attr( 'class', 'partner-text-detail partner-text-imports' );
 
   var partnerTextExports = partnerText.append( 'p' )
       .text( function( d ){
-        return 'Exports: ' + d.total_export;
+        return 'Exports: $' + toSF4( d.total_export );
       } )
       .attr( 'class', 'partner-text-detail partner-text-exports' );
 
@@ -224,6 +234,11 @@ var modelData = [
   // function setYDomain() {
   //   yScale.domain( [ d3.min( graph.nodes, function( d ) { return d[ yScaleEncoding ]; } ), d3.max( graph.nodes, function( d ) { return d[ yScaleEncoding ]; } ) ] );
   // }
+
+  function toSF4( num ) {
+    var prefix = d3.formatPrefix( num );
+    return prefix.scale( num ).toFixed(1) + prefix.symbol;
+  }
 
   // From http://stackoverflow.com/questions/27928/how-do-i-calculate-distance-between-two-latitude-longitude-points
   function getDistanceFromLatLonInKm( lat1, lon1, lat2, lon2 ) {
