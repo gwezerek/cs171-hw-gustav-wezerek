@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Homework 2 Graph</title>
+<link href="css/normalize.css" type="text/css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="css/design.css"/>
+
+<body>
+  <h1>Historical trade flows in real time</h1>
+  <form>
+    <select id="js-year-select-start" class="js-year-select">
+      <option class="js-year-opt" value="1995" selected>1995</option>
+      <option class="js-year-opt" value="1996">1996</option>
+      <option class="js-year-opt" value="1997">1997</option>
+      <option class="js-year-opt" value="1998">1998</option>
+      <option class="js-year-opt" value="1999">1999</option>
+      <option class="js-year-opt" value="2000">2000</option>
+      <option class="js-year-opt" value="2001">2001</option>
+      <option class="js-year-opt" value="2002">2002</option>
+      <option class="js-year-opt" value="2003">2003</option>
+      <option class="js-year-opt" value="2004">2004</option>
+      <option class="js-year-opt" value="2005">2005</option>
+      <option class="js-year-opt" value="2006">2006</option>
+      <option class="js-year-opt" value="2007">2007</option>
+      <option class="js-year-opt" value="2008">2008</option>
+      <option class="js-year-opt" value="2009">2009</option>
+      <option class="js-year-opt" value="2010">2010</option>
+      <option class="js-year-opt" value="2011">2011</option>
+      <option class="js-year-opt" value="2012">2012</option>
+    </select>
+    <p class="year-select-label">to</p>
+    <select id="js-year-select-end" class="js-year-select">
+      <option class="js-year-opt" value="1995">1995</option>
+      <option class="js-year-opt" value="1996">1996</option>
+      <option class="js-year-opt" value="1997">1997</option>
+      <option class="js-year-opt" value="1998">1998</option>
+      <option class="js-year-opt" value="1999">1999</option>
+      <option class="js-year-opt" value="2000">2000</option>
+      <option class="js-year-opt" value="2001">2001</option>
+      <option class="js-year-opt" value="2002">2002</option>
+      <option class="js-year-opt" value="2003">2003</option>
+      <option class="js-year-opt" value="2004">2004</option>
+      <option class="js-year-opt" value="2005">2005</option>
+      <option class="js-year-opt" value="2006">2006</option>
+      <option class="js-year-opt" value="2007">2007</option>
+      <option class="js-year-opt" value="2008">2008</option>
+      <option class="js-year-opt" value="2009">2009</option>
+      <option class="js-year-opt" value="2010">2010</option>
+      <option class="js-year-opt" value="2011">2011</option>
+      <option class="js-year-opt" value="2012" selected>2012</option>
+    </select>
+  </form>
+  <p class="graph-intro">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+  quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+  consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+  cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+  proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+  <div id="js-viz-mod" class="viz-mod">
+    <div class="country-select">
+      <form>
+        <select id="js-country-select" class="js-year-select">
+          <option class="js-country-opt" value="223" selected>United States</option>
+          <option class="js-country-opt" value="1996">country name</option>
+          <option class="js-country-opt" value="1997">country name</option>
+          <option class="js-country-opt" value="1998">country name</option>
+          <option class="js-country-opt" value="1999">country name</option>
+          <option class="js-country-opt" value="2000">country name</option>
+          <option class="js-country-opt" value="2001">country name</option>
+          <option class="js-country-opt" value="2002">country name</option>
+          <option class="js-country-opt" value="2003">country name</option>
+          <option class="js-country-opt" value="2004">country name</option>
+          <option class="js-country-opt" value="2005">country name</option>
+          <option class="js-country-opt" value="2006">country name</option>
+          <option class="js-country-opt" value="2007">country name</option>
+          <option class="js-country-opt" value="2008">country name</option>
+          <option class="js-country-opt" value="2009">country name</option>
+          <option class="js-country-opt" value="2010">country name</option>
+          <option class="js-country-opt" value="2011">country name</option>
+          <option class="js-country-opt" value="2012">country name</option>
+        </select>
+        <p class="country-detail">Total exports: <span class="country-detail-value">$121B</span></p>
+        <p class="country-detail">Total imports: <span class="country-detail-value">$120B</span></p>
+        <p class="country-detail">Net: <span class="country-detail-value">$1B</span></p>
+      </form>
+    </div>
+
+  </div>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/queue.v1.min.js"></script>
+<script type="text/javascript" src="js/design.js"></script>
+</body>
+
+</html>

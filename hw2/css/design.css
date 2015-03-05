@@ -1,0 +1,38 @@
+/* LAYOUT */
+
+body {
+  margin: 0 auto;
+  padding: 40px;
+}
+
+h1 {
+  margin-top: 0px;
+}
+
+
+/* FORM */
+
+form {
+  margin-bottom: 20px;
+}
+
+.year-select-label {
+  display: inline;
+}
+
+
+/* Viz */
+.viz-mod {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: stretch;
+  align-items: stretch;
+}
+
+.country-select {
+  margin-right: 20px;
+}
+
+
