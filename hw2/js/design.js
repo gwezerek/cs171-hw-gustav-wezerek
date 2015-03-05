@@ -6,9 +6,9 @@
 
 // BAR CHART SETUP
 // =============================================
-var margin = { top: 20, bottom: 10, left: 0, right: 100 };
-var width = 900 - margin.left - margin.right;
-var height = 1100 - margin.top - margin.bottom;
+var margin = { top: 20, bottom: 10, left: 0, right: 0 };
+var width = 700 - margin.left - margin.right;
+var height = 900 - margin.top - margin.bottom;
 
 var svg = d3.select( '#js-viz-mod' ).append( 'svg' )
   .attr( 'width', width + margin.left + margin.right )
@@ -52,8 +52,7 @@ var lineStart = defs.append( 'marker' )
 
 var timeScale = d3.scale.linear().range( [ 0, 0.5 ] );
 var xScale = d3.scale.linear().range( [ 0, width ] );
-var partnerHeight = 10;
-var partnerVerticalOffset = 5;
+var partnerHeight = 90;
 
 var modelData = [
   {
@@ -147,25 +146,25 @@ var modelData = [
     .enter().append( 'g' )
       .attr( 'class', 'partner-group')
       .attr( 'transform', function( d, i ) {
-        return 'translate(0,' + partnerHeight * i + partnerVerticalOffset + ')';
+        return 'translate(0,' + ( ( partnerHeight * i ) ) + ')';
       } );
 
   var importLines = partnerGroups.append( 'line' )
       .attr( 'class', 'trade-line import-line')
       .attr( { 
-        'x1': 2,
-        'y1': 22,
+        'x1': 0,
+        'y1': 32,
         'x2': function( d ){ return xScale( d.distance ) - 12; },
-        'y2': 22
+        'y2': 32
       } );
 
   var exportLines = partnerGroups.append( 'line' )
       .attr( 'class', 'trade-line export-line')
       .attr( { 
         'x1': function( d ){ return xScale( d.distance ) - 5; },
-        'y1': 39,
-        'x2': 10,
-        'y2': 39
+        'y1': 59,
+        'x2': 15,
+        'y2': 59
       } );
 
 
@@ -173,8 +172,8 @@ var modelData = [
       .data( data[0].top_partners )
     .enter().append( 'div' )
       .style({ 
-        'top': function( d, i ){ return partnerHeight * i * 10 + partnerVerticalOffset + 'px'; },
-        'left': function( d ){ return xScale( d.distance ) + 'px'; }
+        'top': function( d, i ){ return partnerHeight * i + 'px'; },
+        'left': function( d ){ return xScale( d.distance ) - 10 + 'px'; }
       } )
       .attr( 'class', 'partner-text' );
 
@@ -186,13 +185,13 @@ var modelData = [
 
   var partnerTextImports = partnerText.append( 'p' )
       .text( function( d ){
-        return 'Imports:' + d.total_import;
+        return 'Imports: ' + d.total_import;
       } )
       .attr( 'class', 'partner-text-detail partner-text-imports' );
 
   var partnerTextExports = partnerText.append( 'p' )
       .text( function( d ){
-        return 'Exports:' + d.total_export;
+        return 'Exports: ' + d.total_export;
       } )
       .attr( 'class', 'partner-text-detail partner-text-exports' );
 

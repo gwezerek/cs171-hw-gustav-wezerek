@@ -5,21 +5,32 @@ body {
   padding: 40px;
 }
 
-h1 {
+.headline-wrap {
+  /*display: inline-block;*/
+}
+
+.viz-title {
   margin-top: 0px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid black;
+}
+
+.graph-intro {
+  max-width: 600px;
+  margin-bottom: 30px;
 }
 
 
-/* FORM */
+/* FORMS */
 
-form {
+.year-select {
   margin-bottom: 20px;
+  float: right;
 }
 
 .year-select-label {
   display: inline;
 }
-
 
 /* Viz */
 .viz-mod {
@@ -30,13 +41,18 @@ form {
   justify-content: flex-start;
   align-content: stretch;
   align-items: stretch;
+  font-weight: 300;
+}
+
+.country-select-mod {
+  /*margin-right: 20px;*/
+  width: 200px;
+  order: 1;
+  border-right: 2px solid #ddd;
 }
 
 .country-select {
-  margin-right: 20px;
-  width: 200px;
-  background: lightgray;
-  order: 1;
+  margin-bottom: 20px;
 }
 
 .partner-text-wrap {
@@ -54,7 +70,16 @@ form {
 
 .partner-text-name,
 .partner-text-detail {
-  margin: 0;
+  margin: 0 0 10px;
+  font-weight: 300;
+}
+
+.partner-text-name {
+  font-weight: 700;
+}
+
+.partner-text-detail {
+  color: gray;
 }
 
 .viz-wrap {
@@ -62,13 +87,13 @@ form {
 }
 
 .trade-line {
-  stroke: black;
+  stroke: #ddd;
   stroke-width: 2px;
 }
 
 .import-line {
   marker-end: url(#marker-destination);
-  marker-start: url(#marker-origin);
+  /*marker-start: url(#marker-origin);*/
 }
 
 .export-line {
@@ -77,12 +102,12 @@ form {
 }
 
 .marker-origin {
-  stroke: black;
+  stroke: #ddd;
   stroke-width: 2px;
 }
 
 .marker-destination {
-  fill: black;
+  fill: #ddd;
 }
 
 
