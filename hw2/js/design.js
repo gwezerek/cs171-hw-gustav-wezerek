@@ -1,7 +1,53 @@
 'use strict';
 
+// General plan of attack
+// For each line
+//   Based on timeScale( d.total_export ) (or import), get interval to emit ship
+//   At that interval, append a ship 
+//   Start the transition, but provide a duration() function that scales 
+// and animate it to line end at constant speed
+//   Delete at line end
+
 // GLOBAL MISC
 // =============================================
+var secondsInAYear = 31536000;
+var emitsPerYear = secondsInAYear * 2;
+var iconValueEl = d3.select( '#js-icon-value' );
+var maxImportOrExport, maxDistance, iconValue;
+
+// Interval manager
+// From http://stackoverflow.com/questions/8635502/how-do-i-clear-all-intervals
+var intervalManager = {
+  //to keep a reference to all the intervals
+  intervals : {},
+
+  //create another interval
+  make : function ( ourFunction, delay ) {
+    //see explanation after the code
+    var newInterval = setInterval.apply(
+      window,
+      [ ourFunction, delay ].concat( [].slice.call(arguments, 2) )
+    );
+
+    this.intervals[ newInterval ] = true;
+
+    return newInterval;
+  },
+
+  //clear a single interval
+  clear : function ( id ) {
+    return clearInterval( this.intervals[id] );
+  },
+
+  //clear all intervals
+  clearAll : function () {
+    var all = Object.keys( this.intervals ), len = all.length;
+
+    while ( len --> 0 ) {
+      clearInterval( all.shift() );
+    }
+  }
+};
 
 
 // BAR CHART SETUP
@@ -9,6 +55,12 @@
 var margin = { top: 20, bottom: 10, left: 0, right: 0 };
 var width = 700 - margin.left - margin.right;
 var height = 900 - margin.top - margin.bottom;
+var partnerHeight = 90;
+
+// Scales
+var timeScale = d3.scale.linear().range( [ 0, 500 ] );
+var xScale = d3.scale.linear().range( [ 0, width ] );
+var durationScale = d3.scale.linear().range( [ 0, 3000 ] );
 
 var svg = d3.select( '#js-viz-mod' ).append( 'svg' )
   .attr( 'width', width + margin.left + margin.right )
@@ -49,10 +101,6 @@ var lineStart = defs.append( 'marker' )
       'y2': 10,
       'class': 'marker-origin'
     } );
-
-var timeScale = d3.scale.linear().range( [ 0, 0.5 ] );
-var xScale = d3.scale.linear().range( [ 0, width ] );
-var partnerHeight = 90;
 
 var modelData = [
   {
@@ -165,7 +213,8 @@ var modelData = [
         'x1': 0,
         'y1': 32,
         'x2': function( d ){ return xScale( d.distance ) - 12; },
-        'y2': 32
+        'y2': 32,
+        'stroke-dasharray': '5, 10'
       } );
 
   var exportLines = partnerGroups.append( 'line' )
@@ -174,7 +223,8 @@ var modelData = [
         'x1': function( d ){ return xScale( d.distance ) - 5; },
         'y1': 59,
         'x2': 15,
-        'y2': 59
+        'y2': 59,
+        'stroke-dasharray': '5, 10'
       } );
 
 
@@ -205,6 +255,7 @@ var modelData = [
       } )
       .attr( 'class', 'partner-text-detail partner-text-exports' );
 
+  restartAnimation();
 
   // STATE
   // =============================================
@@ -213,31 +264,102 @@ var modelData = [
   // HELPERS
   // =============================================
   function initChart() {
-    setTimeDomain();
+    setMaxImportOrExport();
+    setMaxDistance();
     setXDomain();
+    setTimeDomain();
+    setDurationDomain();
+    setIconValue();
+    updateIconValue();
     // setYDomain();
   }
 
   function setTimeDomain() {
     // calculateDistances();
-    timeScale.domain( [ 0, d3.max( data[0].top_partners, function( d ) { return Math.max( d.total_export, d.total_import); } ) ] );
+    timeScale.domain( [ 0, maxImportOrExport ] );
   }
 
   function setXDomain() {
-    xScale.domain( [ 0, d3.max( data[0].top_partners, function( d ) { return d.distance; } ) ] );
+    xScale.domain( [ 0, maxDistance ] );
   }
+
+  function setDurationDomain() {
+    durationScale.domain( [ 0, maxDistance ] );
+  }
+
 
   // function calculateDistances() {
 
   // }
 
-  // function setYDomain() {
-  //   yScale.domain( [ d3.min( graph.nodes, function( d ) { return d[ yScaleEncoding ]; } ), d3.max( graph.nodes, function( d ) { return d[ yScaleEncoding ]; } ) ] );
-  // }
-
   function toSF4( num ) {
     var prefix = d3.formatPrefix( num );
     return prefix.scale( num ).toFixed(1) + prefix.symbol;
+  }
+
+  function setMaxImportOrExport() {
+    maxImportOrExport = d3.max( data[0].top_partners, function( d ) { return Math.max( d.total_export, d.total_import); } );
+  }
+
+  function setMaxDistance() {
+    maxDistance = d3.max( data[0].top_partners, function( d ) { return d.distance; } );
+  }
+
+  function setIconValue() {
+    iconValue = maxImportOrExport / emitsPerYear;
+  }
+
+  function updateIconValue() {
+    iconValueEl.text( '$' + Math.round( iconValue ) );
+  }
+
+  function restartAnimation() {
+    // data[0].top_partners.forEach( function( value, index ) {
+    //   var interval = timeScale( d.total_export );
+    // });
+
+    // importLines.each( function( d, i ) {
+    //   console.log(d, this);
+    //   var interval = timeScale( d.total_import );
+    //   intervalManager.make( startIcon( this ), interval );
+    // });
+
+    var importIcons = partnerGroups.append( 'circle' )
+      .attr( {
+        'cx': -10,
+        'cy': 32,
+        'r': 5,
+        'class': 'icon icon-import'
+      });
+
+    var exportIcons = partnerGroups.append( 'circle' )
+      .attr( {
+        'cx': function( d ){ return xScale( d.distance ) - 7; },
+        'cy': 59,
+        'r': 5,
+        'class': 'icon icon-import'
+      });
+
+    importIcons.transition()
+        .ease('linear')
+        .duration( function( d ) { return durationScale( d.distance ); } )
+        .attr( 'cx',  function( d ) { return xScale( d.distance ) - 7; } )
+        .remove();
+
+    exportIcons.transition()
+        .ease('linear')
+        .duration( function( d ) { return durationScale( d.distance ); } )
+        .attr( 'cx', -10 )
+        .remove();
+  }
+
+  function startIcon( line ) {
+    line.append( 'circle' )
+      .attr({
+        'cx': 0,
+        'cy': 5,
+        'r': 5
+      });
   }
 
   // From http://stackoverflow.com/questions/27928/how-do-i-calculate-distance-between-two-latitude-longitude-points
