@@ -24,15 +24,41 @@ form {
 /* Viz */
 .viz-mod {
   display:flex;
+  position: relative;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
   align-content: stretch;
-  align-items: center;
+  align-items: stretch;
 }
 
 .country-select {
   margin-right: 20px;
+  width: 200px;
+  background: lightgray;
+  order: 1;
+}
+
+.viz-wrap {
+  order: 2;
+}
+
+.partner-text-wrap {
+  position: absolute;
+  order: 3;
+  top: 0;
+  bottom: 0;
+  left: 220px;
+  right: 0;
+}
+
+.partner-text {
+  position: absolute;
+}
+
+.partner-text-name,
+.partner-text-imports {
+  margin: 0;
 }
 
 
