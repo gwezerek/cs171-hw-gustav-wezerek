@@ -23,12 +23,12 @@ form {
 
 /* Viz */
 .viz-mod {
-  display: flex;
+  display:flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
   align-content: stretch;
-  align-items: stretch;
+  align-items: center;
 }
 
 .country-select {
