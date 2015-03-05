@@ -1,11 +1,11 @@
 # CS 171 Design Studio 1 Answers
 ### PART 1 - ANALYSIS
 Users who would be interested in this dataset:
-* Economics student,
-* high school social studies student,
-* international investor,
-* government analysts/researchers (in the U.S. at, say, the State Department or USITC), minister of finance or industry/commerce,
-* logistics researcher at shipping corporation,
+* economics student 
+* high school social studies student 
+* international investor 
+* government analysts/researchers (in the U.S. at, say, the State Department or USITC), minister of finance or industry commerce
+* logistics researcher at shipping corporation 
 * general public (given a news hook)
 
 #### Chosen user
@@ -27,9 +27,9 @@ Download the data for the graphs
 ![Final wireframe](design/final_wire.JPG)
 
 ### PART 3 - REFLECTION
-_In absence of partners as a OED student, I’ve written about why I’ve decided to build the frequency graph._
+_I'm an OED student, so I couldn't workshop my ideas with other students. Instead, I’ve written about why I’ve decided to build the frequency graph._
 
-I chose Alvaro, the high school student, because the provided dataset doesn’t go deep enough to realistically inform anyone else (other than the general public, but providing a news hook seemed a bit out of scope) without supplement from something like the World Bank or Comtrade (which also seemed out of scope). Were I to build an app for Alvaro, I would go with #5 on the thumbnail sketch sheet, the list of bar charts. With the bar charts, I wouldn’t have to worry as much about Alvaro’s visual literacy, which is the main obstacle for the high school user. The encoding of trade volume as length is unfussy and easy to compare, the graphs are easy to export and they work at mobile sizes.
+I chose Alvaro, the high school student, because the provided dataset doesn’t go deep enough to realistically inform anyone else (other than the general public, but providing a news hook seemed a bit out of scope) without supplement from something like the World Bank or Comtrade (which also seemed out of scope). Were I to build an app for Alvaro, I would go with #5 on the thumbnail sketch sheet, the list of bar charts. With the bar charts, I wouldn’t have to worry as much about Alvaro’s visual literacy, which is the main obstacle for the high school user. The encoding of trade volume as length is unfussy and easy to compare, the graphs are easy to export and they read well at mobile sizes and in black and white.
 
 But I work (with Romain, actually) designing graphs about trade data for real users on a daily basis. I fight for bar and line charts over treemaps and network graphs day in and day out. I’m taking this class because I want to try experimenting with infovis the way Romain does, building novel visualizations that might not be as user-friendly as the old standbys but are fun to think about and implement.
 
