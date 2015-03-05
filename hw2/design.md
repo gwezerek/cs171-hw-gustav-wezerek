@@ -23,8 +23,8 @@ Export the graphs as images
 Download the data for the graphs
 
 ### PART 2 - SKETCHING
-![Layout exploration](design/sketches.jpg)
-![Final wireframe](design/final_wire.jpg)
+![Layout exploration](design/sketches.JPG)
+![Final wireframe](design/final_wire.JPG)
 
 ### PART 3 - REFLECTION
 _In absence of partners as a OED student, I’ve written about why I’ve decided to build the frequency graph._
