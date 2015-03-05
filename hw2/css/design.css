@@ -39,10 +39,6 @@ form {
   order: 1;
 }
 
-.viz-wrap {
-  order: 2;
-}
-
 .partner-text-wrap {
   position: absolute;
   order: 3;
@@ -57,8 +53,36 @@ form {
 }
 
 .partner-text-name,
-.partner-text-imports {
+.partner-text-detail {
   margin: 0;
+}
+
+.viz-wrap {
+  order: 2;
+}
+
+.trade-line {
+  stroke: black;
+  stroke-width: 2px;
+}
+
+.import-line {
+  marker-end: url(#marker-destination);
+  marker-start: url(#marker-origin);
+}
+
+.export-line {
+  marker-end: url(#marker-destination);
+  marker-start: url(#marker-origin);
+}
+
+.marker-origin {
+  stroke: black;
+  stroke-width: 2px;
+}
+
+.marker-destination {
+  fill: black;
 }
 
 

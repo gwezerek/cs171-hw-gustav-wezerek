@@ -15,6 +15,41 @@ var svg = d3.select( '#js-viz-mod' ).append( 'svg' )
   .attr( 'height', height + margin.top + margin.bottom )
   .attr( 'class', 'viz-wrap' );
 
+var defs = svg.append( 'defs' );
+
+// from http://logogin.blogspot.com/2013/02/d3js-arrowhead-markers.html
+var arrowhead = defs.append( 'marker' )
+    .attr( {
+      'id': 'marker-destination',
+      'viewBox': '0 0 10 10',
+      'refX': 0,
+      'refY': 5,
+      'markerWidth': 5,
+      'markerHeight': 10,
+      'orient': 'auto'
+    } )
+  .append( 'polyline' )
+    .attr( 'class', 'marker-destination')
+    .attr( 'points', '0,0 10,5 0,10 0,5' ); //this is actual shape for arrowhead
+
+var lineStart = defs.append( 'marker' )
+    .attr( {
+      'id': 'marker-origin',
+      'refX': 1,
+      'refY': 2.5,
+      'markerWidth': 1,
+      'markerHeight': 5,
+      'orient': 'auto'
+    } )
+  .append( 'line' )
+    .attr( { 
+      'x1': 0,
+      'y1': 0,
+      'x2': 0,
+      'y2': 10,
+      'class': 'marker-origin'
+    } );
+
 var timeScale = d3.scale.linear().range( [ 0, 0.5 ] );
 var xScale = d3.scale.linear().range( [ 0, width ] );
 var partnerHeight = 10;
@@ -22,78 +57,78 @@ var partnerVerticalOffset = 5;
 
 var modelData = [
   {
-    "name": "Angola",
-    "alpha2_code": "ao",
-    "country_id": 4,
-    "longitude": 13.242,
-    "gdp": 12650000000.0,
-    "life_expectancy": 42.0514634146341,
-    "population": 12104952.0,
-    "year": 1995,
-    "top_partners": [
+    'name': 'Angola',
+    'alpha2_code': 'ao',
+    'country_id': 4,
+    'longitude': 13.242,
+    'gdp': 12650000000.0,
+    'life_expectancy': 42.0514634146341,
+    'population': 12104952.0,
+    'year': 1995,
+    'top_partners': [
       {
-        "total_export": 2036096161.9550002,
-        "total_import": 2036096161.9550002,
-        "country_id": 223,
-        "distance": 6978.278548386516
+        'total_export': 2036096161.9550002,
+        'total_import': 2036096161.9550002,
+        'country_id': 223,
+        'distance': 6978.278548386516
       },
       {
-        "total_export": 224173637.056,
-        "total_import": 2036096161.9550002,
-        "country_id": 50,
-        "distance": 5672.672572104966
+        'total_export': 224173637.056,
+        'total_import': 2036096161.9550002,
+        'country_id': 50,
+        'distance': 5672.672572104966
       },
       {
-        "total_export": 158327929.5,
-        "total_import": 2036096161.9550002,
-        "country_id": 16,
-        "distance": 5672.672572104966
+        'total_export': 158327929.5,
+        'total_import': 2036096161.9550002,
+        'country_id': 16,
+        'distance': 5672.672572104966
       },
       {
-        "total_export": 117076297.133,
-        "total_import": 2036096161.9550002,
-        "country_id": 38,
-        "distance": 5672.672572104966
+        'total_export': 117076297.133,
+        'total_import': 2036096161.9550002,
+        'country_id': 38,
+        'distance': 5672.672572104966
       },
       {
-        "total_export": 102352390.975,
-        "total_import": 2036096161.9550002,
-        "country_id": 102,
-        "distance": 5672.672572104966
+        'total_export': 102352390.975,
+        'total_import': 2036096161.9550002,
+        'country_id': 102,
+        'distance': 5672.672572104966
       },
       {
-        "total_export": 98906529.644,
-        "total_import": 2036096161.9550002,
-        "country_id": 112,
-        "distance": 5672.672572104966
+        'total_export': 98906529.644,
+        'total_import': 2036096161.9550002,
+        'country_id': 112,
+        'distance': 5672.672572104966
       },
       {
-        "total_export": 95060953.24,
-        "total_import": 2036096161.9550002,
-        "country_id": 64,
-        "distance": 5672.672572104966
+        'total_export': 95060953.24,
+        'total_import': 2036096161.9550002,
+        'country_id': 64,
+        'distance': 5672.672572104966
       },
       {
-        "total_export": 78828771.431,
-        "total_import": 2036096161.9550002,
-        "country_id": 69,
-        "distance": 5672.672572104966
+        'total_export': 78828771.431,
+        'total_import': 2036096161.9550002,
+        'country_id': 69,
+        'distance': 5672.672572104966
       },
       {
-        "total_export": 61113059.0,
-        "total_import": 2036096161.9550002,
-        "country_id": 37,
-        "distance": 5672.672572104966
+        'total_export': 61113059.0,
+        'total_import': 2036096161.9550002,
+        'country_id': 37,
+        'distance': 5672.672572104966
       },
       {
-        "total_export": 38838947.0,
-        "total_import": 2036096161.9550002,
-        "country_id": 28,
-        "distance": 5672.672572104966
+        'total_export': 38838947.0,
+        'total_import': 2036096161.9550002,
+        'country_id': 28,
+        'distance': 5672.672572104966
       }
     ],
-    "latitude": -8.81155,
-    "continent": "Africa"
+    'latitude': -8.81155,
+    'continent': 'Africa'
   }
 ];
 
@@ -113,7 +148,26 @@ var modelData = [
       .attr( 'class', 'partner-group')
       .attr( 'transform', function( d, i ) {
         return 'translate(0,' + partnerHeight * i + partnerVerticalOffset + ')';
-      });
+      } );
+
+  var importLines = partnerGroups.append( 'line' )
+      .attr( 'class', 'trade-line import-line')
+      .attr( { 
+        'x1': 2,
+        'y1': 22,
+        'x2': function( d ){ return xScale( d.distance ) - 12; },
+        'y2': 22
+      } );
+
+  var exportLines = partnerGroups.append( 'line' )
+      .attr( 'class', 'trade-line export-line')
+      .attr( { 
+        'x1': function( d ){ return xScale( d.distance ) - 5; },
+        'y1': 39,
+        'x2': 10,
+        'y2': 39
+      } );
+
 
   var partnerText = d3.select( '#js-partner-text-wrap' ).selectAll( '.partner-text' )
       .data( data[0].top_partners )
@@ -121,20 +175,26 @@ var modelData = [
       .style({ 
         'top': function( d, i ){ return partnerHeight * i * 10 + partnerVerticalOffset + 'px'; },
         'left': function( d ){ return xScale( d.distance ) + 'px'; }
-      })
+      } )
       .attr( 'class', 'partner-text' );
 
   var partnerTextNames = partnerText.append( 'p' )
       .text( function( d ){
         return d.country_id;
-      })
+      } )
       .attr( 'class', 'partner-text-name' );
 
   var partnerTextImports = partnerText.append( 'p' )
       .text( function( d ){
         return 'Imports:' + d.total_import;
-      })
-      .attr( 'class', 'partner-text-imports' );
+      } )
+      .attr( 'class', 'partner-text-detail partner-text-imports' );
+
+  var partnerTextExports = partnerText.append( 'p' )
+      .text( function( d ){
+        return 'Exports:' + d.total_export;
+      } )
+      .attr( 'class', 'partner-text-detail partner-text-exports' );
 
 
   // STATE
