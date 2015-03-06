@@ -64,17 +64,14 @@ body {
   position: absolute;
 }
 
-.partner-text-name,
-.partner-text-detail {
-  margin: 0 0 10px;
-  font-weight: 300;
-}
-
 .partner-text-name {
+  margin: 0 0 5px;
   font-weight: 700;
 }
 
 .partner-text-detail {
+  margin: 0;
+  font-weight: 300;
   color: gray;
 }
 
