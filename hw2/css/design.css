@@ -5,28 +5,53 @@ body {
   padding: 40px;
 }
 
-.viz-title {
-  margin-top: 0px;
+p {
+  line-height: 135%;
+}
+
+.page-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.head-wrap {
+  width: 100%;
   padding-bottom: 10px;
   border-bottom: 1px solid black;
 }
 
-.graph-intro {
-  max-width: 600px;
+.viz-title {
+  margin-top: 0px;
+  display: inline;
+}
+
+.viz-form {
+  float: right;
+  margin-top: 4px;
+}
+
+.country-select {
+  margin-right: 5px;
+}
+
+.intro-wrap {
+  display:flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-content: flex-end;
+  align-items: flex-start;
   margin-bottom: 30px;
 }
 
-
-/* FORMS */
-
-.year-select {
-  margin-bottom: 20px;
-  float: right;
+.graph-intro {
+  max-width: 600px;
 }
 
-.year-select-label {
-  display: inline;
+.graph-intro:first-child {
+  margin-right: 20px;
 }
+
 
 /* Viz */
 .viz-mod {
@@ -38,17 +63,20 @@ body {
   align-content: stretch;
   align-items: stretch;
   font-weight: 300;
+  padding-bottom: 40px;
+  border-bottom: 1px solid black;
+  margin-bottom: 10px;
 }
 
-.country-select-mod {
-  /*margin-right: 20px;*/
+.country-details-mod {
   width: 200px;
   order: 1;
   border-right: 2px solid #ddd;
 }
 
-.country-select {
-  margin-bottom: 20px;
+.country-name {
+  margin: 0 0 4px;
+  font-weight: 700;
 }
 
 .partner-text-wrap {
@@ -62,11 +90,6 @@ body {
 
 .partner-text {
   position: absolute;
-}
-
-.partner-text-name {
-  margin: 0 0 5px;
-  font-weight: 700;
 }
 
 .partner-text-detail {
@@ -86,12 +109,6 @@ body {
 
 .import-line {
   marker-end: url(#marker-destination);
-  /*marker-start: url(#marker-origin);*/
-}
-
-.export-line {
-  marker-end: url(#marker-destination);
-  marker-start: url(#marker-origin);
 }
 
 .marker-origin {

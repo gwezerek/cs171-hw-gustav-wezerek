@@ -5,9 +5,10 @@
 var secondsInAYear = 31536000;
 var emitsPerYear = secondsInAYear * 2;
 var iconValueEl = d3.select( '#js-icon-value' );
+var popValueEl = d3.select( '#js-pop-value' );
 var intervalIDs = [];
 var filteredData = [];
-var maxExport, maxDistance, iconValue, currentCountryID, currentYear;
+var maxExport, maxDistance, iconValue, popValue, currentCountryID, currentYear;
 
 
 // BAR CHART SETUP
@@ -44,24 +45,6 @@ var arrowhead = defs.append( 'marker' )
   .append( 'polyline' )
     .attr( 'class', 'marker-destination')
     .attr( 'points', '0,0 10,5 0,10 0,5' ); //this is actual shape for arrowhead
-
-var lineStart = defs.append( 'marker' )
-    .attr( {
-      'id': 'marker-origin',
-      'refX': 1,
-      'refY': 2.5,
-      'markerWidth': 1,
-      'markerHeight': 5,
-      'orient': 'auto'
-    } )
-  .append( 'line' )
-    .attr( {
-      'x1': 0,
-      'y1': 0,
-      'x2': 0,
-      'y2': 10,
-      'class': 'marker-origin'
-    } );
 
 
 // LOAD DATA, DRAW VIZ
@@ -102,7 +85,7 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
       .text( function( d ){
         return d.name;
       } )
-      .attr( 'class', 'partner-text-name' );
+      .attr( 'class', 'country-name' );
 
   var partnerTextImports = partnerText.append( 'p' )
       .text( function( d ){
@@ -124,8 +107,7 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
     setMaxDistance();
     setXDomain();
     setDurationDomain();
-    setIconValue();
-    updateIconValue();
+    updateDynamicText();
   }
 
   function populateCountryDropdown() {
@@ -202,12 +184,27 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
     maxDistance = d3.max( filteredData[0].top_partners, function( d ) { return d.distance; } );
   }
 
+  function updateDynamicText() {
+    setIconValue();
+    setPopValue();
+    updateIconValue();
+    updatePopValue();
+  }
+
   function setIconValue() {
     iconValue = maxExport / emitsPerYear;
   }
 
+  function setPopValue() {
+    popValue = filteredData[0].population;
+  }
+
   function updateIconValue() {
-    iconValueEl.text( '$' + Math.round( iconValue ) );
+    iconValueEl.text( '$' + Math.round( iconValue ) + ' USD' );
+  }
+
+  function updatePopValue() {
+    popValueEl.text( toSF4( popValue ) );
   }
 
   function restartAnimation() {

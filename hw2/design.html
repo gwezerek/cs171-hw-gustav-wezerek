@@ -5,41 +5,51 @@
 <link rel="stylesheet" type="text/css" href="css/design.css"/>
 
 <body>
-  <header class="header">
-    <h1 class="viz-title">Historical trade flows in real time</h1>
-    <p class="graph-intro">The distance between the selected country and the trading partners represents the distance between the center of those countries, as the crow flies. It is meant only to give a general sense of proximity.</p>
-  </header>
+  <main class="page-wrap">
+    <header class="header">
+      <div class="head-wrap">
+        <h1 class="viz-title">International exports in real time</h1>
+        <form class="viz-form">
+          <select id="js-country-select" class="country-select"></select>
+          <select id="js-year-select" class="js-year-select">
+            <option class="js-year-opt" value="1995" selected>1995</option>
+            <option class="js-year-opt" value="1996">1996</option>
+            <option class="js-year-opt" value="1997">1997</option>
+            <option class="js-year-opt" value="1998">1998</option>
+            <option class="js-year-opt" value="1999">1999</option>
+            <option class="js-year-opt" value="2000">2000</option>
+            <option class="js-year-opt" value="2001">2001</option>
+            <option class="js-year-opt" value="2002">2002</option>
+            <option class="js-year-opt" value="2003">2003</option>
+            <option class="js-year-opt" value="2004">2004</option>
+            <option class="js-year-opt" value="2005">2005</option>
+            <option class="js-year-opt" value="2006">2006</option>
+            <option class="js-year-opt" value="2007">2007</option>
+            <option class="js-year-opt" value="2008">2008</option>
+            <option class="js-year-opt" value="2009">2009</option>
+            <option class="js-year-opt" value="2010">2010</option>
+            <option class="js-year-opt" value="2011">2011</option>
+            <option class="js-year-opt" value="2012">2012</option>
+          </select>
+        </form>
+      </div>
+      <div class="intro-wrap">
+        <p class="graph-intro">When we talk about international trade, we talk about millions or billions of dollars of goods being shipped all around the world. It's easy to lose sight of how much money that really is. The graph below shows export data in real time&mdash;ships leave port at rates proportional to the country's trade with the nations on the right.</p>
+        <p class="graph-intro">The value of the ships changes based on which country you select. Make sure to note the change if you switch the country or year. Distance between the selected country and the trading partners represents the distance between the centers of those countries, as the crow flies.</p>
+      </div>
+    </header>
 
-  <main id="js-viz-mod" class="viz-mod">
-    <div class="country-select-mod">
-      <form>
-        <select id="js-country-select" class="country-select"></select>
-        <select id="js-year-select" class="js-year-select">
-          <option class="js-year-opt" value="1995" selected>1995</option>
-          <option class="js-year-opt" value="1996">1996</option>
-          <option class="js-year-opt" value="1997">1997</option>
-          <option class="js-year-opt" value="1998">1998</option>
-          <option class="js-year-opt" value="1999">1999</option>
-          <option class="js-year-opt" value="2000">2000</option>
-          <option class="js-year-opt" value="2001">2001</option>
-          <option class="js-year-opt" value="2002">2002</option>
-          <option class="js-year-opt" value="2003">2003</option>
-          <option class="js-year-opt" value="2004">2004</option>
-          <option class="js-year-opt" value="2005">2005</option>
-          <option class="js-year-opt" value="2006">2006</option>
-          <option class="js-year-opt" value="2007">2007</option>
-          <option class="js-year-opt" value="2008">2008</option>
-          <option class="js-year-opt" value="2009">2009</option>
-          <option class="js-year-opt" value="2010">2010</option>
-          <option class="js-year-opt" value="2011">2011</option>
-          <option class="js-year-opt" value="2012">2012</option>
-        </select>
-      </form>
-      <p class="country-detail partner-text-detail">Total exports: <span class="country-detail-value">$121B</span></p>
-      <p class="country-detail partner-text-detail">Icon value: <span id="js-icon-value" class="country-detail-value"></span></p>
-    </div>
-    <div id="js-partner-text-wrap" class="partner-text-wrap"></div>
-  </div>
+    <article id="js-viz-mod" class="viz-mod">
+      <div class="country-details-mod">
+        <p class="country-name">United States</p>
+        <p class="country-detail partner-text-detail">Population: <span id="js-pop-value" class="country-detail-value"></span></p>
+        <p class="country-detail partner-text-detail">Icon value: <span id="js-icon-value" class="country-detail-value"></span></p>
+      </div>
+      <div id="js-partner-text-wrap" class="partner-text-wrap"></div>
+    </article>
+    <p class="">This chart is certainly not the best way to visualize this data. Comparing the frequency of the ships, especially given the varied length of the "trade routes," is one of the least elegant ways to convey trade volume. You can't compare exports across countries because the value of the ship changes (a design choice made to make within-country comparisons more obvious). And the country distances are almost meaningless given how they're measured. With all that said, this was fun and challenging to build, and I'm glad I let myself be a little silly.</p>
+  </main>
+
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script type="text/javascript" src="js/design.js"></script>
