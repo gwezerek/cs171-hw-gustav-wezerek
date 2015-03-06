@@ -6,9 +6,10 @@ var secondsInAYear = 31536000;
 var emitsPerYear = secondsInAYear * 2;
 var iconValueEl = d3.select( '#js-icon-value' );
 var popValueEl = d3.select( '#js-pop-value' );
+var countryNameEl = d3.select( '#js-country-name' );
 var intervalIDs = [];
 var filteredData = [];
-var maxExport, maxDistance, iconValue, popValue, currentCountryID, currentYear;
+var maxExport, maxDistance, iconValue, popValue, countryName, currentCountryID, currentYear;
 
 
 // BAR CHART SETUP
@@ -187,8 +188,10 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
   function updateDynamicText() {
     setIconValue();
     setPopValue();
+    setCountryName();
     updateIconValue();
     updatePopValue();
+    updateCountryName();
   }
 
   function setIconValue() {
@@ -199,12 +202,20 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
     popValue = filteredData[0].population;
   }
 
+  function setCountryName() {
+    countryName = filteredData[0].name;
+  }
+
   function updateIconValue() {
     iconValueEl.text( '$' + Math.round( iconValue ) + ' USD' );
   }
 
   function updatePopValue() {
     popValueEl.text( toSF4( popValue ) );
+  }
+
+  function updateCountryName() {
+    countryNameEl.text( countryName );
   }
 
   function restartAnimation() {
