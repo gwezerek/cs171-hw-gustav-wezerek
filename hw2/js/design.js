@@ -7,6 +7,8 @@ var emitsPerYear = secondsInAYear * 2;
 var iconValueEl = d3.select( '#js-icon-value' );
 var popValueEl = d3.select( '#js-pop-value' );
 var countryNameEl = d3.select( '#js-country-name' );
+var countrySelect = d3.select( '#js-country-select' );
+var yearSelect = d3.select( '#js-year-select' );
 var intervalIDs = [];
 var filteredData = [];
 var maxExport, maxDistance, iconValue, popValue, countryName, currentCountryID, currentYear;
@@ -56,7 +58,7 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
   initChart();
 
   var partnerGroups = svg.selectAll( '.partner-group' )
-      .data( filteredData[0].top_partners )
+      .data( filteredData.top_partners )
     .enter().append( 'g' )
       .attr( 'class', 'partner-group')
       .attr( 'transform', function( d, i ) {
@@ -74,7 +76,7 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
       } );
 
   var partnerText = d3.select( '#js-partner-text-wrap' ).selectAll( '.partner-text' )
-      .data( filteredData[0].top_partners )
+      .data( filteredData.top_partners )
     .enter().append( 'div' )
       .style({
         'top': function( d, i ){ return partnerHeight * i + 'px'; },
@@ -90,20 +92,22 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
 
   var partnerTextImports = partnerText.append( 'p' )
       .text( function( d ){
-        return '$' + toSF4( d.total_export ) + ' in imports from ' + filteredData[0].name;
+        return '$' + toSF4( d.total_export ) + ' in imports from ' + filteredData.name;
       } )
       .attr( 'class', 'partner-text-detail partner-text-imports' );
 
 
   restartAnimation();
 
-
-  // HELPERS
+  // STATE MAINTENANCE
   // =============================================
-  function initChart() {
-    populateCountryDropdown();
-    updateFilteredData();
+  function setInitialParams() {
+    updateCountryID();
+    updateYear();
+  }
 
+  function processNewData() {
+    updateFilteredData();
     setMaxExport();
     setMaxDistance();
     setXDomain();
@@ -111,78 +115,28 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
     updateDynamicText();
   }
 
-  function populateCountryDropdown() {
-    var optString = '';
-
-    data.forEach( function( value, index ) {
-      if ( value.name === 'United States' ) {
-        optString += '<option class="js-country-opt" value="' + value.country_id + '" selected>' + value.name + '</option>';
-      } else {
-        optString += '<option class="js-country-opt" value="' + value.country_id + '">' + value.name + '</option>';
-      }
-    });
-
-    d3.select( '#js-country-select' ).html( optString );
-  }
-
   function updateFilteredData() {
-    updateCountryID();
-    updateYear();
-
-    filteredData = data.filter( function( d ) {
+    var selectedCountryDatum = data.filter( function( d ) {
       return d.country_id === currentCountryID ;
-    });
+    })[0];
 
-    var selectedYearDatum = filteredData[0].years.filter( function( d ) {
+    var selectedYearDatum = selectedCountryDatum.years.filter( function( d ) {
       return d.year === currentYear ;
-    });
+    })[0];
 
-    $.extend( true, filteredData, selectedYearDatum );
+    filteredData = $.extend( {}, selectedCountryDatum, selectedYearDatum );
 
-    var startLat = filteredData[0].latitude;
-    var startLon = filteredData[0].longitude;
+    var startLat = filteredData.latitude;
+    var startLon = filteredData.longitude;
 
-    filteredData[0].top_partners.forEach( function( value, index ) {
+    filteredData.top_partners.forEach( function( value, index ) {
       var tradePartner = data.filter( function( d ) {
         return d.country_id === value.country_id ;
-      });
+      })[0];
 
-      value.distance = getDistanceFromLatLonInKm( startLat, startLon, tradePartner[0].latitude, tradePartner[0].longitude );
-      value.name = tradePartner[0].name;
+      value.distance = getDistanceFromLatLonInKm( startLat, startLon, tradePartner.latitude, tradePartner.longitude );
+      value.name = tradePartner.name;
     });
-  }
-
-  function updateCountryID() {
-    currentCountryID = parseInt( d3.select( '#js-country-select' ).property( 'value' ), 10 );
-  }
-
-  function updateYear() {
-    currentYear = parseInt( d3.select( '#js-year-select' ).property( 'value' ), 10 );
-  }
-
-  function getInterval( tradeValue ) {
-    return maxExport / tradeValue * minIconEmitInterval;
-  }
-
-  function setXDomain() {
-    xScale.domain( [ 0, maxDistance ] );
-  }
-
-  function setDurationDomain() {
-    durationScale.domain( [ 0, maxDistance ] );
-  }
-
-  function toSF4( num ) {
-    var prefix = d3.formatPrefix( num );
-    return prefix.scale( num ).toFixed(1) + prefix.symbol;
-  }
-
-  function setMaxExport() {
-    maxExport = d3.max( filteredData[0].top_partners, function( d ) { return d.total_export; } );
-  }
-
-  function setMaxDistance() {
-    maxDistance = d3.max( filteredData[0].top_partners, function( d ) { return d.distance; } );
   }
 
   function updateDynamicText() {
@@ -194,16 +148,24 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
     updateCountryName();
   }
 
+  function updateCountryID() {
+    currentCountryID = parseInt( countrySelect.property( 'value' ), 10 );
+  }
+
+  function updateYear() {
+    currentYear = parseInt( yearSelect.property( 'value' ), 10 );
+  }
+
   function setIconValue() {
     iconValue = maxExport / emitsPerYear;
   }
 
   function setPopValue() {
-    popValue = filteredData[0].population;
+    popValue = filteredData.population;
   }
 
   function setCountryName() {
-    countryName = filteredData[0].name;
+    countryName = filteredData.name;
   }
 
   function updateIconValue() {
@@ -218,10 +180,59 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
     countryNameEl.text( countryName );
   }
 
+  function getInterval( tradeValue ) {
+    return maxExport / tradeValue * minIconEmitInterval;
+  }
+
+  function setXDomain() {
+    xScale.domain( [ 0, maxDistance ] );
+  }
+
+  function setDurationDomain() {
+    durationScale.domain( [ 0, maxDistance ] );
+  }
+
+  function setMaxExport() {
+    maxExport = d3.max( filteredData.top_partners, function( d ) { return d.total_export; } );
+  }
+
+  function setMaxDistance() {
+    maxDistance = d3.max( filteredData.top_partners, function( d ) { return d.distance; } );
+  }
+
+
+
+  // HELPERS
+  // =============================================
+  function initChart() {
+    populateCountryDropdown();
+    setInitialParams();
+    processNewData();
+  }
+
+  function populateCountryDropdown() {
+    var optString = '';
+
+    data.forEach( function( value, index ) {
+      if ( value.name === 'United States' ) {
+        optString += '<option class="js-country-opt" value="' + value.country_id + '" selected>' + value.name + '</option>';
+      } else {
+        optString += '<option class="js-country-opt" value="' + value.country_id + '">' + value.name + '</option>';
+      }
+    });
+
+    countrySelect.html( optString );
+  }
+
+  function toSF4( num ) {
+    var prefix = d3.formatPrefix( num );
+    return prefix.scale( num ).toFixed(1) + prefix.symbol;
+  }
+
   function restartAnimation() {
     clearIntervals();
 
-    filteredData[0].top_partners.forEach( function( value, index ) {
+    filteredData.top_partners.forEach( function( value, index ) {
       var intervalID;
 
       // Start import animations
@@ -276,5 +287,16 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
 
   // HANDLERS
   // =============================================
+  // Country select
+  countrySelect.on( 'change', function() {
+    updateCountryID();
+    processNewData();
+  });
+
+  // Year select
+  yearSelect.on( 'change', function() {
+    updateYear();
+    processNewData();
+  });
 
 });
