@@ -22,6 +22,9 @@ var height = 575 - margin.top - margin.bottom;
 var partnerHeight = 60;
 var minIconEmitInterval = 500;
 
+// Viz selections
+var partnerGroups, importLines, partnerText, partnerTextNames, partnerTextImports;
+
 // Scales
 var xScale = d3.scale.linear().range( [ 0, width ] );
 var durationScale = d3.scale.linear().range( [ 0, 3000 ] );
@@ -57,48 +60,6 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
   // Init
   initChart();
 
-  var partnerGroups = svg.selectAll( '.partner-group' )
-      .data( filteredData.top_partners )
-    .enter().append( 'g' )
-      .attr( 'class', 'partner-group')
-      .attr( 'transform', function( d, i ) {
-        return 'translate(0,' + ( ( partnerHeight * i ) ) + ')';
-      } );
-
-  var importLines = partnerGroups.append( 'line' )
-      .attr( 'class', 'trade-line import-line')
-      .attr( {
-        'x1': 0,
-        'y1': 18,
-        'x2': function( d ){ return xScale( d.distance ) - 12; },
-        'y2': 18,
-        'stroke-dasharray': '5, 10'
-      } );
-
-  var partnerText = d3.select( '#js-partner-text-wrap' ).selectAll( '.partner-text' )
-      .data( filteredData.top_partners )
-    .enter().append( 'div' )
-      .style({
-        'top': function( d, i ){ return partnerHeight * i + 'px'; },
-        'left': function( d ){ return xScale( d.distance ) - 10 + 'px'; }
-      } )
-      .attr( 'class', 'partner-text' );
-
-  var partnerTextNames = partnerText.append( 'p' )
-      .text( function( d ){
-        return d.name;
-      } )
-      .attr( 'class', 'country-name' );
-
-  var partnerTextImports = partnerText.append( 'p' )
-      .text( function( d ){
-        return '$' + toSF4( d.total_export ) + ' in imports from ' + filteredData.name;
-      } )
-      .attr( 'class', 'partner-text-detail partner-text-imports' );
-
-
-  restartAnimation();
-
   // STATE MAINTENANCE
   // =============================================
   function setInitialParams() {
@@ -113,6 +74,81 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
     setXDomain();
     setDurationDomain();
     updateDynamicText();
+  }
+
+  function updateViz() {
+
+    // Reset visuals
+    clearIntervals();
+    d3.selectAll( 'circle' ).remove();
+
+    // ENTER UPDATE EXIT - Lines
+    // Update line data
+    partnerGroups = svg.selectAll( '.partner-group' )
+        .data( filteredData.top_partners, function( d ) {
+          return d.country_id;
+        });
+
+    // Enter
+    var partnerGroupsEnter = partnerGroups.enter().append( 'g' );
+    partnerGroupsEnter.append( 'line' );
+
+    // Update
+    partnerGroups.transition()
+        .attr( 'class', 'partner-group')
+        .attr( 'transform', function( d, i ) {
+          return 'translate(0,' + ( ( partnerHeight * i ) ) + ')';
+        } );
+    
+    importLines = partnerGroups.selectAll( 'line' )
+        .transition()
+        .attr( 'class', 'trade-line import-line')
+        .attr( {
+          'x1': 0,
+          'y1': 18,
+          'x2': function( d ){ return xScale( d.distance ) - 12; },
+          'y2': 18,
+          'stroke-dasharray': '5, 10'
+        } );
+
+    // Exit
+    partnerGroups.exit()
+      .remove();
+
+
+    // ENTER UPDATE EXIT - Text
+    // Update text data
+    partnerText = d3.select( '#js-partner-text-wrap' ).selectAll( '.partner-text' )
+        .data( filteredData.top_partners, function( d ) {
+          return d.country_id;
+        });
+
+    // Enter
+    var partnerTextEnter = partnerText.enter().append( 'div' );
+    partnerTextEnter.append( 'p' ).attr( 'class', 'country-name' );
+    partnerTextEnter.append( 'p' ).attr( 'class', 'partner-text-detail partner-text-imports' );
+
+    // Update
+    partnerText.transition()
+        .style({
+          'top': function( d, i ){ return partnerHeight * i + 'px'; },
+          'left': function( d ){ return xScale( d.distance ) - 10 + 'px'; }
+        } )
+        .attr( 'class', 'partner-text' );
+
+    partnerText.selectAll( '.country-name' )
+      .text( function( d ){
+        return d.name;
+      } );
+
+    partnerText.selectAll( '.partner-text-imports' )
+      .text( function( d ){
+        return '$' + toSF4( d.total_export ) + ' in imports from ' + filteredData.name;
+      } );
+
+    // Exit
+    partnerText.exit()
+      .remove();
   }
 
   function updateFilteredData() {
@@ -208,6 +244,8 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
     populateCountryDropdown();
     setInitialParams();
     processNewData();
+    updateViz();
+    restartAnimation();
   }
 
   function populateCountryDropdown() {
@@ -230,8 +268,6 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
   }
 
   function restartAnimation() {
-    clearIntervals();
-
     filteredData.top_partners.forEach( function( value, index ) {
       var intervalID;
 
@@ -251,7 +287,7 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
   }
 
   function startIconImport( partnerIndex ) {
-    d3.select( partnerGroups[0][partnerIndex]).append( 'circle' )
+    d3.select( partnerGroups[0][partnerIndex] ).append( 'circle' )
         .attr( {
           'cx': -10,
           'cy': 18,
@@ -297,6 +333,8 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
   yearSelect.on( 'change', function() {
     updateYear();
     processNewData();
+    updateViz();
+    restartAnimation();
   });
 
 });
