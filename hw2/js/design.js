@@ -1,10 +1,10 @@
 'use strict';
 
 // General plan of attack
-// For each line
+// For each partner group
 //   Based on timeScale( d.total_export ) (or import), get interval to emit ship
-//   At that interval, append a ship 
-//   Start the transition, but provide a duration() function that scales 
+//   At that interval, append a ship
+//   Start the transition, but provide a duration() function that scales
 // and animate it to line end at constant speed
 //   Delete at line end
 
@@ -13,41 +13,8 @@
 var secondsInAYear = 31536000;
 var emitsPerYear = secondsInAYear * 2;
 var iconValueEl = d3.select( '#js-icon-value' );
+var intervalIDs = [];
 var maxImportOrExport, maxDistance, iconValue;
-
-// Interval manager
-// From http://stackoverflow.com/questions/8635502/how-do-i-clear-all-intervals
-var intervalManager = {
-  //to keep a reference to all the intervals
-  intervals : {},
-
-  //create another interval
-  make : function ( ourFunction, delay ) {
-    //see explanation after the code
-    var newInterval = setInterval.apply(
-      window,
-      [ ourFunction, delay ].concat( [].slice.call(arguments, 2) )
-    );
-
-    this.intervals[ newInterval ] = true;
-
-    return newInterval;
-  },
-
-  //clear a single interval
-  clear : function ( id ) {
-    return clearInterval( this.intervals[id] );
-  },
-
-  //clear all intervals
-  clearAll : function () {
-    var all = Object.keys( this.intervals ), len = all.length;
-
-    while ( len --> 0 ) {
-      clearInterval( all.shift() );
-    }
-  }
-};
 
 
 // BAR CHART SETUP
@@ -56,9 +23,9 @@ var margin = { top: 20, bottom: 10, left: 0, right: 0 };
 var width = 700 - margin.left - margin.right;
 var height = 900 - margin.top - margin.bottom;
 var partnerHeight = 90;
+var minIconEmitInterval = 500;
 
 // Scales
-var timeScale = d3.scale.linear().range( [ 0, 500 ] );
 var xScale = d3.scale.linear().range( [ 0, width ] );
 var durationScale = d3.scale.linear().range( [ 0, 3000 ] );
 
@@ -94,7 +61,7 @@ var lineStart = defs.append( 'marker' )
       'orient': 'auto'
     } )
   .append( 'line' )
-    .attr( { 
+    .attr( {
       'x1': 0,
       'y1': 0,
       'x2': 0,
@@ -209,7 +176,7 @@ var modelData = [
 
   var importLines = partnerGroups.append( 'line' )
       .attr( 'class', 'trade-line import-line')
-      .attr( { 
+      .attr( {
         'x1': 0,
         'y1': 32,
         'x2': function( d ){ return xScale( d.distance ) - 12; },
@@ -219,7 +186,7 @@ var modelData = [
 
   var exportLines = partnerGroups.append( 'line' )
       .attr( 'class', 'trade-line export-line')
-      .attr( { 
+      .attr( {
         'x1': function( d ){ return xScale( d.distance ) - 5; },
         'y1': 59,
         'x2': 15,
@@ -231,7 +198,7 @@ var modelData = [
   var partnerText = d3.select( '#js-partner-text-wrap' ).selectAll( '.partner-text' )
       .data( data[0].top_partners )
     .enter().append( 'div' )
-      .style({ 
+      .style({
         'top': function( d, i ){ return partnerHeight * i + 'px'; },
         'left': function( d ){ return xScale( d.distance ) - 10 + 'px'; }
       } )
@@ -267,16 +234,20 @@ var modelData = [
     setMaxImportOrExport();
     setMaxDistance();
     setXDomain();
-    setTimeDomain();
+    // setTimeDomain();
     setDurationDomain();
     setIconValue();
     updateIconValue();
     // setYDomain();
   }
 
-  function setTimeDomain() {
+  // function setTimeDomain() {
     // calculateDistances();
-    timeScale.domain( [ 0, maxImportOrExport ] );
+  //   timeScale.domain( [ 0, maxImportOrExport ] );
+  // }
+
+  function getInterval( tradeValue ) {
+    return maxImportOrExport / tradeValue * minIconEmitInterval;
   }
 
   function setXDomain() {
@@ -314,52 +285,61 @@ var modelData = [
   }
 
   function restartAnimation() {
-    // data[0].top_partners.forEach( function( value, index ) {
-    //   var interval = timeScale( d.total_export );
-    // });
+    clearIntervals();
 
-    // importLines.each( function( d, i ) {
-    //   console.log(d, this);
-    //   var interval = timeScale( d.total_import );
-    //   intervalManager.make( startIcon( this ), interval );
-    // });
+    data[0].top_partners.forEach( function( value, index ) {
+      var intervalID;
 
-    var importIcons = partnerGroups.append( 'circle' )
-      .attr( {
-        'cx': -10,
-        'cy': 32,
-        'r': 5,
-        'class': 'icon icon-import'
-      });
+      // Start import animations
+      intervalID = window.setInterval( function() {
+        startIconImport( index );
+      }, getInterval( value.total_import ) );
 
-    var exportIcons = partnerGroups.append( 'circle' )
-      .attr( {
-        'cx': function( d ){ return xScale( d.distance ) - 7; },
-        'cy': 59,
-        'r': 5,
-        'class': 'icon icon-import'
-      });
+      intervalIDs.push( intervalID );
 
-    importIcons.transition()
+      // Start export animations
+      window.setInterval( function() {
+        startIconExport( index );
+      }, getInterval( value.total_export ) );
+
+      intervalIDs.push( intervalID );
+    });
+  }
+
+  function clearIntervals() {
+    intervalIDs.forEach( function( id, i ) {
+      window.clearInterval( id );
+    });
+  }
+
+  function startIconImport( partnerIndex ) {
+    d3.select( partnerGroups[0][partnerIndex]).append( 'circle' )
+        .attr( {
+          'cx': -10,
+          'cy': 32,
+          'r': 5,
+          'class': 'icon icon-import'
+        })
+        .transition()
         .ease('linear')
         .duration( function( d ) { return durationScale( d.distance ); } )
         .attr( 'cx',  function( d ) { return xScale( d.distance ) - 7; } )
         .remove();
-
-    exportIcons.transition()
-        .ease('linear')
-        .duration( function( d ) { return durationScale( d.distance ); } )
-        .attr( 'cx', -10 )
-        .remove();
   }
 
-  function startIcon( line ) {
-    line.append( 'circle' )
-      .attr({
-        'cx': 0,
-        'cy': 5,
-        'r': 5
-      });
+  function startIconExport( partnerIndex ) {
+    d3.select( partnerGroups[0][partnerIndex]).append( 'circle' )
+        .attr( {
+          'cx': function( d ){ return xScale( d.distance ) - 7; },
+          'cy': 59,
+          'r': 5,
+          'class': 'icon icon-import'
+        })
+        .transition()
+        .ease('linear')
+        .duration( function( d ) { return durationScale( d.distance ); } )
+        .attr( 'cx',  -10 )
+        .remove();
   }
 
   // From http://stackoverflow.com/questions/27928/how-do-i-calculate-distance-between-two-latitude-longitude-points
