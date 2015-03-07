@@ -2,8 +2,6 @@
 
 // GLOBAL MISC
 // =============================================
-var secondsInAYear = 31536000;
-var emitsPerYear = secondsInAYear * 2;
 var iconValueEl = d3.select( '#js-icon-value' );
 var popValueEl = d3.select( '#js-pop-value' );
 var countryNameEl = d3.select( '#js-country-name' );
@@ -14,13 +12,15 @@ var filteredData = [];
 var maxExport, maxDistance, iconValue, popValue, countryName, currentCountryID, currentYear;
 
 
-// BAR CHART SETUP
+// CHART SETUP
 // =============================================
 var margin = { top: 20, bottom: 10, left: 0, right: 0 };
 var width = 700 - margin.left - margin.right;
 var height = 575 - margin.top - margin.bottom;
 var partnerHeight = 60;
-var minIconEmitInterval = 500;
+var minIconEmitInterval = 200;
+var secondsInAYear = 31536000;
+var emitsPerYear = secondsInAYear * ( 1000 / minIconEmitInterval );
 
 // Viz selections
 var partnerGroups, importLines, partnerText, partnerTextNames, partnerTextImports;
@@ -80,7 +80,7 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
 
     // Reset visuals
     clearIntervals();
-    d3.selectAll( 'circle' ).remove();
+    d3.selectAll( 'image' ).remove();
 
     // ENTER UPDATE EXIT - Lines
     // Update line data
@@ -90,8 +90,12 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
         });
 
     // Enter
-    var partnerGroupsEnter = partnerGroups.enter().append( 'g' );
-    partnerGroupsEnter.append( 'line' );
+    partnerGroups.enter().append( 'g' );
+    
+    partnerGroups.selectAll( '.import-line' )
+        .data( function( d ) { return [ { 'distance': d.distance } ]; })
+      .enter().append( 'line' )
+        .attr( 'class', 'trade-line import-line');
 
     // Update
     partnerGroups.transition()
@@ -100,9 +104,8 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
           return 'translate(0,' + ( ( partnerHeight * i ) ) + ')';
         } );
     
-    importLines = partnerGroups.selectAll( 'line' )
+    partnerGroups.selectAll( 'line' )
         .transition()
-        .attr( 'class', 'trade-line import-line')
         .attr( {
           'x1': 0,
           'y1': 18,
@@ -124,9 +127,17 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
         });
 
     // Enter
-    var partnerTextEnter = partnerText.enter().append( 'div' );
-    partnerTextEnter.append( 'p' ).attr( 'class', 'country-name' );
-    partnerTextEnter.append( 'p' ).attr( 'class', 'partner-text-detail partner-text-imports' );
+    partnerText.enter().append( 'div' );
+
+    partnerText.selectAll( '.country-name' )
+        .data( function( d ) { return [ { 'name': d.name } ]; })
+      .enter().append( 'p' )
+        .attr( 'class', 'country-name' );
+
+    partnerText.selectAll( '.partner-text-imports' )
+        .data( function( d ) { return [ { 'total_export': d.total_export } ]; })
+      .enter().append( 'p' )
+        .attr( 'class', 'partner-text-detail partner-text-imports' );
 
     // Update
     partnerText.transition()
@@ -287,17 +298,22 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
   }
 
   function startIconImport( partnerIndex ) {
-    d3.select( partnerGroups[0][partnerIndex] ).append( 'circle' )
+    d3.select( partnerGroups[0][partnerIndex] ).append( 'image' )
         .attr( {
-          'cx': -10,
-          'cy': 18,
-          'r': 5,
-          'class': 'icon'
+          'xlink:href': './img/boat_2.svg',
+          'width': 20,
+          'height': 20,
+          'class': 'icon',
+          'transform': function( d ) {
+            return 'translate(' + 0 + ',' + 5 + ')';
+          }
         })
         .transition()
         .ease('linear')
         .duration( function( d ) { return durationScale( d.distance ); } )
-        .attr( 'cx',  function( d ) { return xScale( d.distance ) - 7; } )
+        .attr( 'transform', function( d ) {
+          return 'translate(' + ( xScale( d.distance ) - 20 )+ ',' + 5 + ')';
+        })
         .remove();
   }
 
@@ -327,6 +343,8 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
   countrySelect.on( 'change', function() {
     updateCountryID();
     processNewData();
+    updateViz();
+    restartAnimation();
   });
 
   // Year select
