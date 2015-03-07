@@ -275,7 +275,14 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
 
   function toSF4( num ) {
     var prefix = d3.formatPrefix( num );
-    return prefix.scale( num ).toFixed(1) + prefix.symbol;
+
+    if ( prefix.symbol === 'G' ) {
+      return parseFloat( prefix.scale( num ).toFixed(1) ) + 'B';
+    } else if ( prefix.symbol === 'M' ) {
+      return parseFloat( prefix.scale( num ).toFixed(0) ) + prefix.symbol;
+    } else {
+      return parseFloat( prefix.scale( num ).toFixed(1) ) + prefix.symbol;
+    }
   }
 
   function restartAnimation() {
