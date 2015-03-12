@@ -23,7 +23,7 @@ var secondsInAYear = 31536000;
 var emitsPerYear = secondsInAYear * ( 1000 / minIconEmitInterval );
 
 // Viz selections
-var partnerGroups, importLines, partnerText, partnerTextNames, partnerTextImports;
+var partnerGroups, partnerText;
 
 // Scales
 var xScale = d3.scale.linear().range( [ 0, width ] );
@@ -38,7 +38,7 @@ var svg = d3.select( '#js-viz-mod' ).append( 'svg' )
 var defs = svg.append( 'defs' );
 
 // from http://logogin.blogspot.com/2013/02/d3js-arrowhead-markers.html
-var arrowhead = defs.append( 'marker' )
+defs.append( 'marker' )
     .attr( {
       'id': 'marker-destination',
       'viewBox': '0 0 10 10',
@@ -91,7 +91,7 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
 
     // Enter
     partnerGroups.enter().append( 'g' );
-    
+
     partnerGroups.selectAll( '.import-line' )
         .data( function( d ) { return [ { 'distance': d.distance } ]; })
       .enter().append( 'line' )
@@ -103,7 +103,7 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
         .attr( 'transform', function( d, i ) {
           return 'translate(0,' + ( ( partnerHeight * i ) ) + ')';
         } );
-    
+
     partnerGroups.selectAll( 'line' )
         .transition()
         .attr( {
@@ -176,7 +176,7 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
     var startLat = filteredData.latitude;
     var startLon = filteredData.longitude;
 
-    filteredData.top_partners.forEach( function( value, index ) {
+    filteredData.top_partners.forEach( function( value ) {
       var tradePartner = data.filter( function( d ) {
         return d.country_id === value.country_id ;
       })[0];
@@ -262,7 +262,7 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
   function populateCountryDropdown() {
     var optString = '';
 
-    data.forEach( function( value, index ) {
+    data.forEach( function( value ) {
       if ( value.name === 'United States' ) {
         optString += '<option class="js-country-opt" value="' + value.country_id + '" selected>' + value.name + '</option>';
       } else {
@@ -299,7 +299,7 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
   }
 
   function clearIntervals() {
-    intervalIDs.forEach( function( id, i ) {
+    intervalIDs.forEach( function( id ) {
       window.clearInterval( id );
     });
   }
@@ -311,9 +311,7 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
           'width': 20,
           'height': 20,
           'class': 'icon',
-          'transform': function( d ) {
-            return 'translate(' + 0 + ',' + 5 + ')';
-          }
+          'transform': 'translate( 0, 5 )'
         })
         .transition()
         .ease('linear')
@@ -340,7 +338,7 @@ d3.json( 'data/countries_1995_2012.json', function( error, data ) {
   }
 
   function deg2rad( deg ) {
-    return deg * ( Math.PI / 180 )
+    return deg * ( Math.PI / 180 );
   }
 
 
