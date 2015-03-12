@@ -1,11 +1,11 @@
 # CS 171 Design Studio 1 Answers
 ### PART 1 - ANALYSIS
 Users who would be interested in this dataset:
-* economics student 
-* high school social studies student 
-* international investor 
+* economics student
+* high school social studies student
+* international investor
 * government analysts/researchers (in the U.S. at, say, the State Department or USITC), minister of finance or industry commerce
-* logistics researcher at shipping corporation 
+* logistics researcher at shipping corporation
 * general public (given a news hook)
 
 #### Chosen user
@@ -15,12 +15,12 @@ High school social studies student
 Alvaro Gomez is a 11th grader in Ms. Miller’s AP U.S. History class. The year is 2013. For his final assignment, he’s has to write a two-page report on the United State’s economy since the 2008 recession, as well as provide two graphs that support his findings and describe what they show. From Wikipedia, Alvaro has stats for 2012, but he doesn’t know where to find straightforward information about the 2008-2012 period.
 
 #### Tasks
-Learn who the United States exported and imported from the most in 2012
-Learn whether those trade partners are the same as they were in 2008
-Learn what products make up the bulk of the United States’ imports and exports in 2012
-Learn whether the United States has a positive or negative trade balance and how that’s changed from 2008 to 2014
-Export the graphs as images
-Download the data for the graphs
+Learn who the United States exported and imported from the most in 2012 (discover)
+Learn whether those trade partners are the same as they were in 2008 (discover)
+Learn what products make up the bulk of the United States’ imports and exports in 2012 (discover)
+Learn whether the United States has a positive or negative trade balance and how that’s changed from 2008 to 2014 (discover)
+Export the graphs as images (present)
+Download the data for the graphs (present, kind of)
 
 ### PART 2 - SKETCHING
 ![Layout exploration](design/sketches.JPG)

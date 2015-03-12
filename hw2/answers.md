@@ -1,7 +1,7 @@
 # Homework 2 Answers
 
 ### 0.1 What is the meaning of the horizontal and vertical position of the nodes? Give examples of datasets particularly well suited to organize data this way.
-The horizontal and vertical position don't encode anything on their own. Rather, the position of the nodes to each other on the 2D plane visualizes the relatedness of the data. You could use a force-directed graph to visualize, say, the co-occurence of characters in _Les Misérables_ or the co-occurence of countries' exports.
+The horizontal and vertical position don't encode anything on their own, as the coordinates are determined by a force simulation with random elements. Rather, the position of the nodes relative to each other on the 2D plane visualizes the relatedness of the data. You could use a force-directed graph to visualize, say, the co-occurence of characters in _Les Misérables_ or the co-occurence of countries' exports.
 
 ### Question 0.2. Which other channels (visual variables), beside color, size and position, could have been used? Name five.
 You could use:
@@ -32,5 +32,6 @@ Note, I'm working under the assumption that we have to stick with a radial netwo
 ### Citations for code
 Libraries used:
 * [Queue.js](https://github.com/mbostock/queue)
+* [jQuery](https://github.com/jquery/jquery)
 
 Any external code snippets noted inline
