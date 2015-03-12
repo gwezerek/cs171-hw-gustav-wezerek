@@ -52,4 +52,4 @@ c. Equality, comparative (===, !==, <, >, <=, =>)
 Position, size, value, color, orientation, grain, texture, motion, shape (kind of), pattern (kind of)
 
 ## 7.7 Which visual variables are quantitative (i.e., allow to judge a quantitative difference between two data points)?
-POsition, size (kind of), motion (kind of, but perception is so subjective that some would argue no)
+Position, size (kind of), motion (kind of, but perception is so subjective that some would argue no)
