@@ -57,40 +57,36 @@
 
         var dateFormatter = d3.time.format("%Y-%m-%d");
 
-
-        var aggregateCountsForRange = function(from, to){
+        var aggregateCountsForRange = function( from, to ){
 
             var count = 0;
+            var dateArr = getDates( from, to );
+            var perDayMap = new Map();
 
-            // TODO: TASK 2 B -- count here for the given time range
-            // you might make use of the map and filter functions
-            // HINT: javascript Date objects are comparable !!
-            // see: http://www.w3schools.com/js/js_date_methods.asp
+            $.each( allData, function( index, value ) {
+                perDayMap.set( value.time.toString(), value.count );
+            });
 
-
-
-
-
-
+            $.each( dateArr, function( index, value ) {
+                count += perDayMap.get( value.toString() );
+            });
 
             // after you assigned a value to the count variable
             // this function checks if your count is correct
             // you need an active internet connection for this to work
             cs171Test.checkCount(count);
-
-
         }
 
 
 
-        function allLoaded(perDay,meta){
+        function allLoaded( error, perDay, meta ){
 
             metaData = meta;
 
             // this will transform your data in a nicer form
             allData = perDay.map(function (d) {
                         var res = {
-                            time: dateFormatter.parse(d.day),
+                            time: dateFormatter.parse( d.day ),
                             count: +d["count(*)"]
                         };
 
@@ -98,22 +94,42 @@
                     }
             )
 
-            console.log(allData);
+            // console.log( allData );
 
            // this function is the test function if your code works correct
             // you need an active internet connection for it to work
-            cs171Test.allLoaded(allData,metaData);
+            cs171Test.allLoaded( allData, metaData );
 
             // the aggreagte function is called with two parameters
-            aggregateCountsForRange(dateFormatter.parse("2013-01-01"), dateFormatter.parse("2013-01-31"))
+            aggregateCountsForRange( dateFormatter.parse("2013-01-01"), dateFormatter.parse("2013-01-31") );
         }
 
 
-        // TODO: TASK 2 A -- implement your data loading here and then call "allLoaded(perDayData, metaData)"
+        queue()
+          .defer( d3.json, 'data/perDayData.json' )
+          .defer( d3.json, 'data/MYWorld_fields.json' )
+          .await( allLoaded );
 
 
+        // from answer by Lukas Eder:
+        // http://stackoverflow.com/questions/4413590/javascript-get-array-of-dates-between-2-dates
+        Date.prototype.addDays = function( days ) {
+            var dat = new Date(this.valueOf())
+            dat.setDate(dat.getDate() + days);
+            return dat;
+        }
 
-
+        // from answer by Lukas Eder:
+        // http://stackoverflow.com/questions/4413590/javascript-get-array-of-dates-between-2-dates
+        function getDates( startDate, stopDate ) {
+            var dateArray = new Array();
+            var currentDate = startDate;
+            while (currentDate <= stopDate) {
+                dateArray.push( new Date (currentDate) )
+                currentDate = currentDate.addDays(1);
+            }
+            return dateArray;
+        }
 
 
 
