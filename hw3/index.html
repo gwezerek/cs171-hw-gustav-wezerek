@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
-    <meta charset="UTF-8">
+<head lang='en'>
+    <meta charset='UTF-8'>
     <title>Homework 3 - MyWorld Data</title>
 
     <!-- ADD Libraries-->
-    <script src="libs/d3/d3.min.js" charset="utf-8"></script>
-    <script src="libs/jquery/jquery-2.1.1.min.js" charset="utf-8"></script>
-    <script src="libs/bootstrap/js/bootstrap.min.js" charset="utf-8"></script>
-    <script src="libs/queue/queue.min.js" charset="utf-8"></script>
+    <script src='libs/d3/d3.min.js' charset='utf-8'></script>
+    <script src='libs/jquery/jquery-2.1.1.min.js' charset='utf-8'></script>
+    <script src='libs/bootstrap/js/bootstrap.min.js' charset='utf-8'></script>
+    <script src='libs/queue/queue.min.js' charset='utf-8'></script>
 
 
     <!--Stylesheets-->
-    <link rel="stylesheet" type="text/css" href="libs/bootstrap/css/bootstrap.min.css">
+    <link rel='stylesheet' type='text/css' href='libs/bootstrap/css/bootstrap.min.css'>
 
     <!-- Get some nice font-->
     <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -21,32 +21,32 @@
     <!-- FROM HERE ON IT IS HW3 stuff -->
 
     <!-- add own vis classes-->
-    <script src = "js/priovis.js"></script>
-    <script src = "js/agevis.js"></script>
-    <script src = "js/countvis.js"></script>
+    <script src = 'js/priovis.js'></script>
+    <script src = 'js/agevis.js'></script>
+    <script src = 'js/countvis.js'></script>
 
     <!-- add own stylesheet-->
-    <link rel="stylesheet" type="text/css" href="css/myStyle.css">
+    <link rel='stylesheet' type='text/css' href='css/myStyle.css'>
 
 </head>
 <body>
-    <div class="container">
+    <div class='container'>
         <h1>Homework 3 - MyWorld 2015 Data Visualization</h1>
 
-        <div class="row">
-            <div class="col-md-8 col-sm-12">
+        <div class='row'>
+            <div class='col-md-8 col-sm-12'>
                <p> The following visualization shows you the votes for MyWorld 2015. You can select a time range to see changes in the distribution of votes und distribution of age of the voters.</p>
             </div>
 
         </div>
 
-        <div class="row">
-            <div class="col-md-2">
-                <button class="btn btn-sm btn-primary" id="fitInBtn"> <span class="glyphicon glyphicon-resize-horizontal"></span> reset zoom </button>
+        <div class='row'>
+            <div class='col-md-2'>
+                <button class='btn btn-sm btn-primary' id='fitInBtn'> <span class='glyphicon glyphicon-resize-horizontal'></span> reset zoom </button>
             </div>
 
-            <div class="col-md-8">
-                <b>current brush:</b> <span id="brushInfo"></span>
+            <div class='col-md-8'>
+                <b>current brush:</b> <span id='brushInfo'></span>
             </div>
 
 
@@ -55,26 +55,26 @@
 
 
 
-        <div class="row">
-            <div class="col-md-9" id="countVis">
+        <div class='row'>
+            <div class='col-md-9' id='countVis'>
                 <!-- TODO: delete placeholder svg element -->
-                <svg width="650" height="330" style="background-color: lightblue">
-                    <text x="50" y="50">HERE should be CountVis</text>
+                <svg width='650' height='330' style='background-color: lightblue'>
+                    <text x='50' y='50'>HERE should be CountVis</text>
                 </svg>
             </div>
-            <div class="col-md-3" id="ageVis">
+            <div class='col-md-3' id='ageVis'>
                 <!-- TODO: delete placeholder svg element -->
-                <svg width="230" height="330" style="background-color: lightcoral">
-                    <text x="50" y="50">HERE should be AgeVis</text>
+                <svg width='230' height='330' style='background-color: lightcoral'>
+                    <text x='50' y='50'>HERE should be AgeVis</text>
                 </svg>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-12" id="prioVis">
+        <div class='row'>
+            <div class='col-md-12' id='prioVis'>
                 <!-- TODO: delete placeholder svg element -->
-                <svg width="650" height="440" style="background-color: lightgreen">
-                    <text x="50" y="50">HERE should be PrioVis</text>
+                <svg width='650' height='440' style='background-color: lightgreen'>
+                    <text x='50' y='50'>HERE should be PrioVis</text>
                 </svg>
             </div>
 
@@ -105,7 +105,7 @@
             // this function can convert Date objects to a string
             // it can also convert strings to Date objects
             // see: https://github.com/mbostock/d3/wiki/Time-Formatting
-            var dateFormatter = d3.time.format("%Y-%m-%d");
+            var dateFormatter = d3.time.format('%Y-%m-%d');
 
 
             // call this function after Data is loaded, reformatted and bound to the variables
@@ -124,7 +124,7 @@
 
             }
 
-            // call this function after both files are loaded -- error should be "null" if no error
+            // call this function after both files are loaded -- error should be 'null' if no error
             var dataLoaded = function (error, _allData, _metaData) {
 
                 if (!error) {
@@ -141,23 +141,32 @@
                     * */
 
 
-                    allData = _allData.map(function (d) {
+                    allData = _allData.map( function ( d ) {
+
+                                var ageMap = new Map();
+
+                                $.each( d.age, function( index, value ) {
+                                    ageMap.set( value.age, value[ 'count(*)' ] );
+                                });
+
+                                console.log(ageMap);
+
                                 var res = {
-                                    time: dateFormatter.parse(d.day),
-                                    count: parseInt(d["count(*)"])
+                                    time: dateFormatter.parse( d.day ),
+                                    count: parseInt( d[ 'count(*)' ] )
                                 };
 
-                                // TODO: implement that  !!
                                 res.prios = []
-                                // should be an array of 16 numbers with the total count MAPping the prio values,
-                                //  [d["sum(p0)"], d["sum(p1)"], d["sum(p2)"],...]
-                                // Example:
-                                // [10,200,500,... ]
 
+                                for ( i = 0; i < 16; i++ ) {
+                                    res.prios.push( d[ 'sum(p' + i + ')' ] );
+                                }
 
                                 // This is ONE way to create an array of length 100
-                                // and set every value to "0")
-                                res.ages = d3.range(0,100). map(function(){return 0;})
+                                // and set every value to '0')
+                                res.ages = d3.range( 0, 100 ).map( function() {
+                                    // return ageMap.get( 10 );
+                                } );
 
                                 // TODO: Assign the count for each age to the index position
                                 // eg: res.ages[22] should contain the count value for age 22
@@ -165,7 +174,7 @@
                                 // final result:
                                 // [0,0,0,..,1034,23,...] -- array length is 100
 
-
+                                console.log( res );
                                 return res;
                             }
                     )
@@ -176,16 +185,37 @@
             }
 
             var startHere = function(){
-
-                //TODO: load data here and call "dataLoaded" afterwards
-                // Hint: http://giscollective.org/d3-queue-js/
+                queue()
+                  .defer( d3.json, 'data/perDayData.json' )
+                  .defer( d3.json, 'data/MYWorld_fields.json' )
+                  .await( dataLoaded );
 
                 // bind reset zoom button to a function (-- ONLY FOR BONUS --)
-                d3.select("#fitInBtn").on("click", function() {
+                d3.select('#fitInBtn').on('click', function() {
                     // TODO: -- ONLY FOR BONUS --
                 });
 
 
+            }
+
+            // from answer by Lukas Eder:
+            // http://stackoverflow.com/questions/4413590/javascript-get-array-of-dates-between-2-dates
+            Date.prototype.addDays = function( days ) {
+                var dat = new Date(this.valueOf())
+                dat.setDate(dat.getDate() + days);
+                return dat;
+            }
+
+            // from answer by Lukas Eder:
+            // http://stackoverflow.com/questions/4413590/javascript-get-array-of-dates-between-2-dates
+            function getDates( startDate, stopDate ) {
+                var dateArray = new Array();
+                var currentDate = startDate;
+                while (currentDate <= stopDate) {
+                    dateArray.push( new Date (currentDate) )
+                    currentDate = currentDate.addDays(1);
+                }
+                return dateArray;
             }
 
             startHere();

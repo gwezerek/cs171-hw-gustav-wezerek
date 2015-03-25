@@ -94,8 +94,6 @@
                     }
             )
 
-            // console.log( allData );
-
            // this function is the test function if your code works correct
             // you need an active internet connection for it to work
             cs171Test.allLoaded( allData, metaData );
@@ -109,7 +107,6 @@
           .defer( d3.json, 'data/perDayData.json' )
           .defer( d3.json, 'data/MYWorld_fields.json' )
           .await( allLoaded );
-
 
         // from answer by Lukas Eder:
         // http://stackoverflow.com/questions/4413590/javascript-get-array-of-dates-between-2-dates
@@ -130,8 +127,6 @@
             }
             return dateArray;
         }
-
-
 
     })
 

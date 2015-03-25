@@ -71,7 +71,7 @@ CountVis.prototype.initVis = function(){
 
 /**
  * Method to wrangle the data. In this case it takes an options object
-  */
+*/
 CountVis.prototype.wrangleData= function(){
 
     // displayData should hold the data which is visualized
