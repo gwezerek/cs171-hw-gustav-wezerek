@@ -29,7 +29,7 @@ PrioViz = function( _parentElement, _data, _metaData ) {
 /**
  * Method that loads all the data
  */
-PrioViz.prototype.initVis = function(){
+PrioViz.prototype.loadData = function(){
 
     var that = this; // read about the this
 
@@ -37,11 +37,12 @@ PrioViz.prototype.initVis = function(){
     //TODO: create axis and scales
 
     // filter, aggregate, modify data
-    this.wrangleData(null);
+    this.wrangleData( null );
 
     // call the update method
     this.updateVis();
 }
+
 
 /**
  * Method that sets up the SVG and the variables
@@ -74,8 +75,6 @@ PrioViz.prototype.wrangleData= function(_filterFunction){
     //// if you don't pass options -- set the default options
     //// the default is: var options = {filter: function(){return true;} }
     //var options = _options || {filter: function(){return true;}};
-
-
 
 }
 

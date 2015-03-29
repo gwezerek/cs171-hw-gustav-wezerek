@@ -13,13 +13,13 @@
  * */
 
 /**
- * AgeVis object for HW3 of CS171
+ * AgeViz object for HW3 of CS171
  * @param _parentElement -- the HTML or SVG element (D3 node) to which to attach the vis
  * @param _data -- the data array
  * @param _metaData -- the meta-data / data description object
  * @constructor
  */
-AgeVis = function(_parentElement, _data, _metaData){
+AgeViz = function(_parentElement, _data, _metaData){
     this.parentElement = _parentElement;
     this.data = _data;
     this.metaData = _metaData;
@@ -38,7 +38,7 @@ AgeVis = function(_parentElement, _data, _metaData){
 /**
  * Method that sets up the SVG and the variables
  */
-AgeVis.prototype.initVis = function(){
+AgeViz.prototype.initVis = function(){
 
     var that = this; // read about the this
 
@@ -58,7 +58,7 @@ AgeVis.prototype.initVis = function(){
  * Method to wrangle the data. In this case it takes an options object
  * @param _filterFunction - a function that filters data or "null" if none
  */
-AgeVis.prototype.wrangleData= function(_filterFunction){
+AgeViz.prototype.wrangleData= function(_filterFunction){
 
     // displayData should hold the data which is visualized
     this.displayData = this.filterAndAggregate(_filterFunction);
@@ -79,7 +79,7 @@ AgeVis.prototype.wrangleData= function(_filterFunction){
 /**
  * the drawing function - should use the D3 selection, enter, exit
  */
-AgeVis.prototype.updateVis = function(){
+AgeViz.prototype.updateVis = function(){
 
     // Dear JS hipster,
     // you might be able to pass some options as parameter _option
@@ -101,7 +101,7 @@ AgeVis.prototype.updateVis = function(){
  * be defined here.
  * @param selection
  */
-AgeVis.prototype.onSelectionChange= function (selectionStart, selectionEnd){
+AgeViz.prototype.onSelectionChange= function (selectionStart, selectionEnd){
 
     // TODO: call wrangle function
 
@@ -126,7 +126,7 @@ AgeVis.prototype.onSelectionChange= function (selectionStart, selectionEnd){
  * @param _filter - A filter can be, e.g.,  a function that is only true for data of a given time range
  * @returns {Array|*}
  */
-AgeVis.prototype.filterAndAggregate = function(_filter){
+AgeViz.prototype.filterAndAggregate = function(_filter){
 
 
     // Set filter to a function that accepts all items

@@ -57,15 +57,11 @@
 
         <div class='row'>
             <div class='col-md-9' id='countVis'>
-                <!-- TODO: delete placeholder svg element -->
-                <svg width='650' height='330' style='background-color: lightblue'>
-                    <text x='50' y='50'>HERE should be CountVis</text>
-                </svg>
             </div>
             <div class='col-md-3' id='ageVis'>
                 <!-- TODO: delete placeholder svg element -->
                 <svg width='230' height='330' style='background-color: lightcoral'>
-                    <text x='50' y='50'>HERE should be AgeVis</text>
+                    <text x='50' y='50'>Age distribution: AgeViz</text>
                 </svg>
             </div>
         </div>
@@ -74,7 +70,7 @@
             <div class='col-md-12' id='prioVis'>
                 <!-- TODO: delete placeholder svg element -->
                 <svg width='650' height='440' style='background-color: lightgreen'>
-                    <text x='50' y='50'>HERE should be PrioVis</text>
+                    <text x='50' y='50'>Distribution of priorities: PrioViz</text>
                 </svg>
             </div>
 
@@ -105,7 +101,8 @@
             // this function can convert Date objects to a string
             // it can also convert strings to Date objects
             // see: https://github.com/mbostock/d3/wiki/Time-Formatting
-            var dateFormatter = d3.time.format('%Y-%m-%d');
+            var dateFormatter = d3.time.format('%Y-%m-%d').parse;
+            var dateParser = d3.time.format("%Y-%m-%d").parse
 
 
             // call this function after Data is loaded, reformatted and bound to the variables
@@ -116,7 +113,9 @@
 
 
                 //TODO: Instantiate all Vis Objects here
-
+                var myPrio = new PrioViz( d3.select( '#prioVis' ), allData, metaData ),
+                    myCount = new CountViz( d3.select( '#countVis' ), allData, metaData ),
+                    myAge = new AgeViz( d3.select( '#ageVis' ), allData, metaData );
 
                 // TODO: bind the eventHandler to the Vis Objects
                 // events will be created from the CountVis object (nothing to do here)
@@ -125,52 +124,39 @@
             }
 
             // call this function after both files are loaded -- error should be 'null' if no error
-            var dataLoaded = function (error, _allData, _metaData) {
+            var dataLoaded = function ( error, _allData, _metaData ) {
 
-                if (!error) {
-
-                    // make our data look nicer and more useful:
-                    // per Day we want to have an object looking like this:
-                    /*
-                    * {
-                    *   time: .. (should be a Date object)
-                    *   count: .. (number of all votes)
-                    *   prios: [..,..,..,...] (array of number of votes per priority -> array length =16)
-                    *   ages: [..,..,..,..] (array counts of votes per age 0-99)
-                    *
-                    * */
-
+                if ( !error ) {
 
                     allData = _allData.map( function ( d ) {
+                        var ageMap = d3.map( d.age, function( val ) {
+                            return val.age;
+                        });
 
-                                var ageMap = d3.map( d.age, function( val ) {
-                                    return val.age;
-                                });
+                        var res = {
+                            time: dateParser( d.day ),
+                            count: parseInt( d[ 'count(*)' ] ),
+                            prios: [],
+                            ages: []
+                        };
 
-                                var res = {
-                                    time: dateFormatter.parse( d.day ),
-                                    count: parseInt( d[ 'count(*)' ] ),
-                                    prios: [],
-                                    ages: []
-                                };
+                        for ( i = 0; i < 16; i++ ) {
+                            res.prios.push( d[ 'sum(p' + i + ')' ] );
+                        }
 
-                                for ( i = 0; i < 16; i++ ) {
-                                    res.prios.push( d[ 'sum(p' + i + ')' ] );
-                                }
+                        res.ages = d3.range( 0, 100 ).map( function( age ) {
+                            var count = ageMap.get( age );
 
-                                res.ages = d3.range( 0, 100 ).map( function( age ) {
-                                    var count = ageMap.get( age );
-
-                                    if ( count ) {
-                                        return count[ 'count(*)' ];
-                                    } else {
-                                        return 0;
-                                    }
-
-                                } );
-
-                                return res;
+                            if ( count ) {
+                                return count[ 'count(*)' ];
+                            } else {
+                                return 0;
                             }
+
+                        } );
+
+                        return res;
+                      }
                     )
 
                     metaData = _metaData;
@@ -185,7 +171,7 @@
                   .await( dataLoaded );
 
                 // bind reset zoom button to a function (-- ONLY FOR BONUS --)
-                d3.select('#fitInBtn').on('click', function() {
+                d3.select( '#fitInBtn' ).on( 'click', function() {
                     // TODO: -- ONLY FOR BONUS --
                 });
 
