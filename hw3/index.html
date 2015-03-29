@@ -143,38 +143,32 @@
 
                     allData = _allData.map( function ( d ) {
 
-                                var ageMap = new Map();
-
-                                $.each( d.age, function( index, value ) {
-                                    ageMap.set( value.age, value[ 'count(*)' ] );
+                                var ageMap = d3.map( d.age, function( val ) {
+                                    return val.age;
                                 });
-
-                                console.log(ageMap);
 
                                 var res = {
                                     time: dateFormatter.parse( d.day ),
-                                    count: parseInt( d[ 'count(*)' ] )
+                                    count: parseInt( d[ 'count(*)' ] ),
+                                    prios: [],
+                                    ages: []
                                 };
-
-                                res.prios = []
 
                                 for ( i = 0; i < 16; i++ ) {
                                     res.prios.push( d[ 'sum(p' + i + ')' ] );
                                 }
 
-                                // This is ONE way to create an array of length 100
-                                // and set every value to '0')
-                                res.ages = d3.range( 0, 100 ).map( function() {
-                                    // return ageMap.get( 10 );
+                                res.ages = d3.range( 0, 100 ).map( function( age ) {
+                                    var count = ageMap.get( age );
+
+                                    if ( count ) {
+                                        return count[ 'count(*)' ];
+                                    } else {
+                                        return 0;
+                                    }
+
                                 } );
 
-                                // TODO: Assign the count for each age to the index position
-                                // eg: res.ages[22] should contain the count value for age 22
-                                // BE AWARE THAT THE DATA MIGHT CONTAIN ages >99 which you have to handle especially
-                                // final result:
-                                // [0,0,0,..,1034,23,...] -- array length is 100
-
-                                console.log( res );
                                 return res;
                             }
                     )
