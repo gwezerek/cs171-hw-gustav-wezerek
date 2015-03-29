@@ -2,19 +2,16 @@
  * Created by Hendrik Strobelt (hendrik.strobelt.com) on 1/28/15.
  */
 
-CountViz = function( _parentElement, _data, _metaData, _eventHandler ){
+CountViz = function( _parentElement, _data, _metaData ){
     this.parentElement = _parentElement;
     this.data = _data;
-    this.eventHandler = _eventHandler;
 
     this.initVis();
 }
 
 CountViz.prototype.initVis = function(){
 
-    var that = this; // read about the this
-
-    this.margin = { top: 20, right: 20, bottom: 30, left: 80 };
+    this.margin = { top: 20, right: 20, bottom: 30, left: 50 };
     this.width = 650 - this.margin.left - this.margin.right;
     this.height = 330 - this.margin.top - this.margin.bottom;
 
@@ -42,10 +39,7 @@ CountViz.prototype.initVis = function(){
         .attr( 'transform', 'translate( ' + this.margin.left + ',' + this.margin.top + ' )' );
 
     this.brush = d3.svg.brush()
-        .x( this.xScale )
-        .on( 'brush', function() {
-          that.eventHandler.selectionChanged( that.brush.extent() );
-        });
+        .x( this.xScale );
 
     // call the update method
     this.updateVis();

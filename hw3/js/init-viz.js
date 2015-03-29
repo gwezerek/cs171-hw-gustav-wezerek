@@ -2,7 +2,7 @@
 // GLOBAL
 var allData = [];
 var metaData = {};
-var dispatcher = initDispatcher();
+var dispatcher = {};
 var dateParser = d3.time.format("%Y-%m-%d").parse
 
 var loadData = function(){
@@ -50,11 +50,16 @@ var dataLoaded = function ( error, _allData, _metaData ) {
     }
 };
 
-function initDispatcher() {
+function initDispatcher( myCount, myPrio, myAge ) {
     var dispatch = d3.dispatch( 'selectionChanged' );
 
+    myCount.brush.on( 'brush', function() {
+      dispatch.selectionChanged( myCount.brush.extent() );
+    });
+
     dispatch.on( 'selectionChanged', function( extent ) {
-        console.log( extent );
+        myPrio.onSelectionChange( extent[0], extent[1] );
+        myAge.onSelectionChange( extent[0], extent[1] );
     });
 
     return dispatch;
@@ -62,10 +67,11 @@ function initDispatcher() {
 
 var initVis = function(){
 
-    var myPrio = new PrioViz( d3.select( '#prioVis' ), allData, metaData, dispatcher ),
-        myCount = new CountViz( d3.select( '#countVis' ), allData, metaData, dispatcher ),
-        myAge = new AgeViz( d3.select( '#ageVis' ), allData, metaData, dispatcher );
+    var myPrio = new PrioViz( d3.select( '#prioVis' ), allData, metaData ),
+        myCount = new CountViz( d3.select( '#countVis' ), allData, metaData ),
+        myAge = new AgeViz( d3.select( '#ageVis' ), allData, metaData );
 
+    dispatcher = initDispatcher( myCount, myPrio, myAge );
 }
 
 // from answer by Lukas Eder:
