@@ -18,20 +18,10 @@ AgeViz.prototype.initVis = function(){
     //TODO: construct or select SVG
     //TODO: create axis and scales
 
-    // filter, aggregate, modify data
-    this.wrangleData( null );
-
-    // call the update method
-    this.updateVis();
+    // Meh
+    this.onSelectionChange( null );
 }
 
-AgeViz.prototype.wrangleData= function( _filterFunction ){
-
-    // displayData should hold the data which is visualized
-    this.displayData = this.filterAndAggregate( _filterFunction );
-
-    // var options = { filter: function() { return true; } };
-}
 
 /**
  * the drawing function - should use the D3 selection, enter, exit
@@ -42,7 +32,10 @@ AgeViz.prototype.updateVis = function() {
     // TODO: ...update graphs
 }
 
-AgeViz.prototype.onSelectionChange = function( selectionStart, selectionEnd ){
+AgeViz.prototype.onSelectionChange = function( selectionStart, selectionEnd ) {
+
+    var filter = function() { return true; };
+
     this.displayData = this.filterAndAggregate( filter );
     this.updateVis();
 }

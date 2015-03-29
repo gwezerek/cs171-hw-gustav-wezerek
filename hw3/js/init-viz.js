@@ -2,6 +2,7 @@
 // GLOBAL
 var allData = [];
 var metaData = {};
+var dispatcher = initDispatcher();
 var dateParser = d3.time.format("%Y-%m-%d").parse
 
 var loadData = function(){
@@ -49,17 +50,22 @@ var dataLoaded = function ( error, _allData, _metaData ) {
     }
 };
 
+function initDispatcher() {
+    var dispatch = d3.dispatch( 'selectionChanged' );
+
+    dispatch.on( 'selectionChanged', function( extent ) {
+        console.log( extent );
+    });
+
+    return dispatch;
+}
+
 var initVis = function(){
 
-    var MyEventHandler = new Object();
+    var myPrio = new PrioViz( d3.select( '#prioVis' ), allData, metaData, dispatcher ),
+        myCount = new CountViz( d3.select( '#countVis' ), allData, metaData, dispatcher ),
+        myAge = new AgeViz( d3.select( '#ageVis' ), allData, metaData, dispatcher );
 
-    var myPrio = new PrioViz( d3.select( '#prioVis' ), allData, metaData ),
-        myCount = new CountViz( d3.select( '#countVis' ), allData, metaData ),
-        myAge = new AgeViz( d3.select( '#ageVis' ), allData, metaData );
-
-    $( MyEventHandler ).on( 'selectionChanged', function() {
-        console.log('me');
-    });
 }
 
 // from answer by Lukas Eder:

@@ -43,14 +43,12 @@ CountViz.prototype.initVis = function(){
 
     this.brush = d3.svg.brush()
         .x( this.xScale )
-        .on( 'brush', this.brushed );
+        .on( 'brush', function() {
+          that.eventHandler.selectionChanged( that.brush.extent() );
+        });
 
     // call the update method
     this.updateVis();
-}
-
-CountViz.prototype.brushed = function() {
-    $(this).trigger( 'selectionChanged' );
 }
 
 CountViz.prototype.updateVis = function() {
