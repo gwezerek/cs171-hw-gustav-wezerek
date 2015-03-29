@@ -2,22 +2,6 @@
  * Created by Hendrik Strobelt (hendrik.strobelt.com) on 1/28/15.
  */
 
-
-/*
- *
- * ======================================================
- * We follow the vis template of init - wrangle - update
- * ======================================================
- *
- * */
-
-/**
- * CountViz object for HW3 of CS171
- * @param _parentElement -- the HTML or SVG element (D3 node) to which to attach the vis
- * @param _data -- the data array
- * @param _eventHandler -- the Eventhandling Object to emit data to (see Task 4)
- * @constructor
- */
 CountViz = function( _parentElement, _data, _metaData, _eventHandler ){
     this.parentElement = _parentElement;
     this.data = _data;
@@ -26,10 +10,6 @@ CountViz = function( _parentElement, _data, _metaData, _eventHandler ){
     this.initVis();
 }
 
-
-/**
- * Method that sets up the SVG and the variables
- */
 CountViz.prototype.initVis = function(){
 
     var that = this; // read about the this
@@ -69,20 +49,14 @@ CountViz.prototype.initVis = function(){
     this.updateVis();
 }
 
-
 CountViz.prototype.brushed = function() {
-    console.log('meow');
+    $(this).trigger( 'selectionChanged' );
 }
 
-
-
-/**
- * the drawing function - should use the D3 selection, enter, exit
- * @param _options -- only needed if different kinds of updates are needed
- */
 CountViz.prototype.updateVis = function() {
-
     var that = this;
+
+    // Area chart adapted from http://bl.ocks.org/mbostock/3883195
 
     this.area = d3.svg.area()
         .x( function( d ) { return that.xScale( d.time ); } )
@@ -109,11 +83,10 @@ CountViz.prototype.updateVis = function() {
         .style( 'text-anchor', 'end' )
         .text( 'Votes' );
 
-    this.chart.append('g')
-        .attr('class', 'brush')
+    this.chart.append( 'g' )
+        .attr( 'class', 'brush' )
         .call( this.brush )
-        .selectAll('rect').attr({
+        .selectAll( 'rect' ).attr({
             height: this.height
         });
-
 }
