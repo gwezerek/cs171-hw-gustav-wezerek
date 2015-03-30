@@ -16,10 +16,8 @@ var dataLoaded = function ( error, _allData, _metaData ) {
     if ( !error ) {
 
         allData = _allData.map( function ( d ) {
-            var ageMap = d3.map( d.age, function( val ) {
-                return val.age;
-            });
 
+            var ageMap = d3.map( d.age, function( val ) { return val.age; } );
             var res = {
                 time: dateParser( d.day ),
                 count: parseInt( d[ 'count(*)' ] ),
@@ -58,8 +56,10 @@ function initDispatcher( myCount, myPrio, myAge ) {
     });
 
     dispatch.on( 'selectionChanged', function( extent ) {
-        myPrio.onSelectionChange( extent[0], extent[1] );
-        myAge.onSelectionChange( extent[0], extent[1] );
+        var from = d3.time.day.round( extent[0] );
+        var to = d3.time.day.round( extent[1] );
+        myPrio.onSelectionChange( from, to );
+        myAge.onSelectionChange( from, to );
     });
 
     return dispatch;
