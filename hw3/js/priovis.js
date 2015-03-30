@@ -24,13 +24,13 @@ PrioViz.prototype.getNames = function() {
 
 PrioViz.prototype.initVis = function() {
 
-    this.margin = { top: 10, right: 0, bottom: 100, left: 50 };
+    this.margin = { top: 10, right: 0, bottom: 200, left: 50 };
     this.width = 650 - this.margin.left - this.margin.right;
     this.height = 440 - this.margin.top - this.margin.bottom;
 
     this.xScale = d3.scale.ordinal()
         .rangeRoundBands( [ 0, this.width ], 0.25 )
-        .domain( d3.range( 0, 16 ) );
+        .domain( this.prioNames );
 
     this.yScale = d3.scale.linear()
         .domain( [ 0, 100000 ] )
@@ -53,10 +53,18 @@ PrioViz.prototype.initVis = function() {
     this.chart = this.svg.append( 'g' )
         .attr( 'transform', 'translate( ' + this.margin.left + ',' + this.margin.top + ' )' );
 
-    // this.chart.append( 'g' )
-    //     .attr( 'class', 'axis x-axis' )
-    //     .attr( 'transform', 'translate( 0,' + this.height + ')' )
-    //     .call( this.xAxis );
+    // Tick positioning from http://www.d3noob.org/2013/01/how-to-rotate-text-labels-for-x-axis-of.html
+    this.chart.append( 'g' )
+        .attr( 'class', 'axis x-axis' )
+        .attr( 'transform', 'translate( 0,' + this.height + ')' )
+        .call( this.xAxis )
+      .selectAll('text')  
+        .style('text-anchor', 'end')
+        .attr('dx', '-.8em')
+        .attr('dy', '.15em')
+        .attr('transform', function(d) {
+          return 'rotate(-65)' 
+        });
 
     this.chart.append( 'g' )
         .attr( 'class', 'axis y-axis' )
@@ -67,17 +75,6 @@ PrioViz.prototype.initVis = function() {
         .attr( 'dy', '.71em' )
         .style( 'text-anchor', 'end' )
         .text( 'Votes' );
-
-    var that = this;
-
-    this.chart.selectAll( 'text' )
-        .data( this.prioNames )
-      .append( 'text' )
-        .text( function( d ) { return d; })
-        .attr({
-            'class': 'bar-label',
-            'transform': function( d, i ) { return 'translate(' + that.xScale( i ) + ',' + that.height + ')'; }
-        });
 
     var timeExtent = d3.extent( this.data, function( d ) { return d.time; } );
     this.onSelectionChange( timeExtent[0], timeExtent[1] );
@@ -106,7 +103,7 @@ PrioViz.prototype.updateVis = function() {
         .attr({
             height: function( d ) { return that.height - that.yScale( d ); },
             width: that.xScale.rangeBand(),
-            x: function( d, i ) { return that.xScale( i ); },
+            x: function( d, i ) { return that.xScale( that.prioNames[i] ); },
             y: function( d ) { return that.yScale( d ); },
             class: 'bar-rect',
             fill: function( d, i ) { return that.barColor( i ); }
