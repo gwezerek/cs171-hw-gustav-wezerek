@@ -3,7 +3,7 @@
 var allData = [];
 var metaData = {};
 var dispatcher = {};
-var dateParser = d3.time.format("%Y-%m-%d").parse
+var dateParser = d3.time.format("%Y-%m-%d").parse;
 
 var loadData = function(){
     queue()

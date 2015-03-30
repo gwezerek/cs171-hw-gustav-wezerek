@@ -82,7 +82,7 @@ AgeViz.prototype.onSelectionChange = function( selectionStart, selectionEnd ) {
 }
 
 AgeViz.prototype.filterAndAggregate = function( from, to ) {
-    var res = d3.range( 0, 100 );
+    var res = d3.range( 0, 100 ).map( function() { return 0; });
     var dateArr = getDates( from, to );
     var perDayMap = d3.map( this.data, function( val ) { return val.time; } );
 
@@ -93,6 +93,8 @@ AgeViz.prototype.filterAndAggregate = function( from, to ) {
           });
         }
     });
+
+    console.log(res);
 
     return res;
 }

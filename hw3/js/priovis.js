@@ -99,16 +99,16 @@ PrioViz.prototype.updateVis = function() {
 
     barEnter = this.bars.enter().append( 'rect' );
 
-    this.bars.transition()
+    this.bars
+        .transition()
         .attr({
-            height: function( d ) { return that.height - that.yScale( d ); },
-            width: that.xScale.rangeBand(),
-            x: function( d, i ) { return that.xScale( that.prioNames[i] ); },
-            y: function( d ) { return that.yScale( d ); },
-            class: 'bar-rect',
-            fill: function( d, i ) { return that.barColor( i ); }
-          });
-
+          height: function( d ) { return that.height - that.yScale( d ); },
+          width: that.xScale.rangeBand(),
+          x: function( d, i ) { return that.xScale( that.prioNames[i] ); },
+          y: function( d ) { return that.yScale( d ); },
+          class: 'bar-rect',
+          fill: function( d, i ) { return that.barColor( i ); }
+        });
 }
 
 PrioViz.prototype.onSelectionChange = function( selectionStart, selectionEnd ) {
@@ -117,7 +117,7 @@ PrioViz.prototype.onSelectionChange = function( selectionStart, selectionEnd ) {
 }
 
 PrioViz.prototype.filterAndAggregate = function( from, to ) {
-    var res = d3.range( 0, 16 );
+    var res = d3.range( 0, 16 ).map( function() { return 0; });
     var dateArr = getDates( from, to );
     var perDayMap = d3.map( this.data, function( val ) { return val.time; } );
 
