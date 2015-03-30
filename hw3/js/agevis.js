@@ -77,7 +77,6 @@ AgeViz.prototype.updateVis = function() {
 }
 
 AgeViz.prototype.onSelectionChange = function( selectionStart, selectionEnd ) {
-  console.log(arguments);
     this.displayData = this.filterAndAggregate( selectionStart, selectionEnd );
     this.updateVis();
 }
