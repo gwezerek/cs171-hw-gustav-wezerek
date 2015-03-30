@@ -58,7 +58,7 @@ PrioViz.prototype.initVis = function() {
         .attr( 'class', 'axis x-axis' )
         .attr( 'transform', 'translate( 0,' + this.height + ')' )
         .call( this.xAxis )
-      .selectAll('text')  
+      .selectAll('text')
         .style('text-anchor', 'end')
         .attr('dx', '-.8em')
         .attr('dy', '.15em')
