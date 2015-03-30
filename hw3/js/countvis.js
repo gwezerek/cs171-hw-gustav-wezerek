@@ -2,13 +2,13 @@
  * Created by Hendrik Strobelt (hendrik.strobelt.com) on 1/28/15.
  */
 
-CountViz = function( _parentElement, _data, _metaData ){
+CountViz = function( _parentElement, _data ){
     this.parentElement = _parentElement;
     this.data = _data;
     this.brushTextEl = $( '#brush-text' );
-    this.dateFormatter = d3.time.format("%Y-%m-%d");
+    this.dateFormatter = d3.time.format('%Y-%m-%d');
     this.initVis();
-}
+};
 
 CountViz.prototype.initVis = function(){
 
@@ -44,7 +44,7 @@ CountViz.prototype.initVis = function(){
 
     // call the update method
     this.updateVis();
-}
+};
 
 CountViz.prototype.updateVis = function() {
     var that = this;
@@ -82,8 +82,8 @@ CountViz.prototype.updateVis = function() {
         .selectAll( 'rect' ).attr({
             height: this.height
         });
-}
+};
 
 CountViz.prototype.updateBrushText = function( from, to ) {
     this.brushTextEl.text( this.dateFormatter(from) + ' to ' + this.dateFormatter(to) );
-}
+};

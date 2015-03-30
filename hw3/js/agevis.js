@@ -9,11 +9,9 @@ AgeViz = function( _parentElement, _data, _metaData ){
     this.displayData = [];
 
     this.initVis();
-}
+};
 
 AgeViz.prototype.initVis = function(){
-
-    var that = this;
 
     this.margin = { top: 10, right: 0, bottom: 10, left: 30 };
     this.width = 230 - this.margin.left - this.margin.right;
@@ -54,7 +52,7 @@ AgeViz.prototype.initVis = function(){
 
     var timeExtent = d3.extent( this.data, function( d ) { return d.time; } );
     this.onSelectionChange( timeExtent[0], timeExtent[1] );
-}
+};
 
 AgeViz.prototype.updateVis = function() {
     var that = this;
@@ -74,12 +72,12 @@ AgeViz.prototype.updateVis = function() {
         .attr( 'transform', 'rotate(90)' )
         .transition()
         .attr( 'd', this.area);
-}
+};
 
 AgeViz.prototype.onSelectionChange = function( selectionStart, selectionEnd ) {
     this.displayData = this.filterAndAggregate( selectionStart, selectionEnd );
     this.updateVis();
-}
+};
 
 AgeViz.prototype.filterAndAggregate = function( from, to ) {
     var res = d3.range( 0, 100 ).map( function() { return 0; });
@@ -94,10 +92,8 @@ AgeViz.prototype.filterAndAggregate = function( from, to ) {
         }
     });
 
-    console.log(res);
-
     return res;
-}
+};
 
 
 

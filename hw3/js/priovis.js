@@ -10,17 +10,17 @@ PrioViz = function( _parentElement, _data, _metaData ){
     this.prioNames = this.getNames();
 
     this.initVis();
-}
+};
 
 PrioViz.prototype.getNames = function() {
     var res = d3.range( 0, 15 );
 
-    for ( i = 0; i < 16; i++ ) {
+    for ( var i = 0; i < 16; i++ ) {
         res[i] = this.metaData.priorities[i][ 'item-title' ];
     }
 
     return res;
-}
+};
 
 PrioViz.prototype.initVis = function() {
 
@@ -62,8 +62,8 @@ PrioViz.prototype.initVis = function() {
         .style('text-anchor', 'end')
         .attr('dx', '-.8em')
         .attr('dy', '.15em')
-        .attr('transform', function(d) {
-          return 'rotate(-65)' 
+        .attr('transform', function() {
+          return 'rotate(-65)';
         });
 
     this.chart.append( 'g' )
@@ -78,13 +78,13 @@ PrioViz.prototype.initVis = function() {
 
     var timeExtent = d3.extent( this.data, function( d ) { return d.time; } );
     this.onSelectionChange( timeExtent[0], timeExtent[1] );
-}
+};
 
 PrioViz.prototype.rescaleAxis = function() {
     this.chart.selectAll( '.y-axis' )
         .transition()
         .call( this.yAxis );
-}
+};
 
 PrioViz.prototype.updateVis = function() {
     var that = this;
@@ -95,9 +95,9 @@ PrioViz.prototype.updateVis = function() {
     this.rescaleAxis();
 
     this.bars = this.chart.selectAll('rect')
-      .data( this.displayData )
+      .data( this.displayData );
 
-    barEnter = this.bars.enter().append( 'rect' );
+    this.bars.enter().append( 'rect' );
 
     this.bars
         .transition()
@@ -109,12 +109,12 @@ PrioViz.prototype.updateVis = function() {
           class: 'bar-rect',
           fill: function( d, i ) { return that.barColor( i ); }
         });
-}
+};
 
 PrioViz.prototype.onSelectionChange = function( selectionStart, selectionEnd ) {
     this.displayData = this.filterAndAggregate( selectionStart, selectionEnd );
     this.updateVis();
-}
+};
 
 PrioViz.prototype.filterAndAggregate = function( from, to ) {
     var res = d3.range( 0, 16 ).map( function() { return 0; });
@@ -130,7 +130,7 @@ PrioViz.prototype.filterAndAggregate = function( from, to ) {
     });
 
     return res;
-}
+};
 
 
 
