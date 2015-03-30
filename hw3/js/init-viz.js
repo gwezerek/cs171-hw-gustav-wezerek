@@ -58,6 +58,7 @@ function initDispatcher( myCount, myPrio, myAge ) {
     dispatch.on( 'selectionChanged', function( extent ) {
         var from = d3.time.day.round( extent[0] );
         var to = d3.time.day.round( extent[1] );
+        myCount.updateBrushText( from, to );
         myPrio.onSelectionChange( from, to );
         myAge.onSelectionChange( from, to );
     });

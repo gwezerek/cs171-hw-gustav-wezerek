@@ -5,7 +5,8 @@
 CountViz = function( _parentElement, _data, _metaData ){
     this.parentElement = _parentElement;
     this.data = _data;
-
+    this.brushTextEl = $( '#brush-text' );
+    this.dateFormatter = d3.time.format("%Y-%m-%d");
     this.initVis();
 }
 
@@ -81,4 +82,8 @@ CountViz.prototype.updateVis = function() {
         .selectAll( 'rect' ).attr({
             height: this.height
         });
+}
+
+CountViz.prototype.updateBrushText = function( from, to ) {
+    this.brushTextEl.text( this.dateFormatter(from) + ' to ' + this.dateFormatter(to) );
 }
