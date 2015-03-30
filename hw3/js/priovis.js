@@ -7,20 +7,30 @@ PrioViz = function( _parentElement, _data, _metaData ){
     this.data = _data;
     this.metaData = _metaData;
     this.displayData = [];
+    this.prioNames = this.getNames();
 
     this.initVis();
 }
 
-PrioViz.prototype.initVis = function(){
+PrioViz.prototype.getNames = function() {
+    var res = d3.range( 0, 15 );
 
-    var that = this;
+    for ( i = 0; i < 16; i++ ) {
+        res[i] = this.metaData.priorities[i][ 'item-title' ];
+    }
 
-    this.margin = { top: 10, right: 0, bottom: 10, left: 50 };
+    return res;
+}
+
+PrioViz.prototype.initVis = function() {
+
+    this.margin = { top: 10, right: 0, bottom: 100, left: 50 };
     this.width = 650 - this.margin.left - this.margin.right;
     this.height = 440 - this.margin.top - this.margin.bottom;
 
-    this.xScale = d3.scale.ordinal().rangeRoundBands( [ 0, this.width ], 0.25 )
-        .domain( d3.range( 0, 15 ) );
+    this.xScale = d3.scale.ordinal()
+        .rangeRoundBands( [ 0, this.width ], 0.25 )
+        .domain( d3.range( 0, 16 ) );
 
     this.yScale = d3.scale.linear()
         .domain( [ 0, 100000 ] )
@@ -29,6 +39,10 @@ PrioViz.prototype.initVis = function(){
     this.yAxis = d3.svg.axis()
         .scale( this.yScale )
         .orient( 'left' );
+
+    this.xAxis = d3.svg.axis()
+        .scale( this.xScale )
+        .orient( 'bottom' );
 
     this.barColor = d3.scale.category20();
 
@@ -39,6 +53,11 @@ PrioViz.prototype.initVis = function(){
     this.chart = this.svg.append( 'g' )
         .attr( 'transform', 'translate( ' + this.margin.left + ',' + this.margin.top + ' )' );
 
+    // this.chart.append( 'g' )
+    //     .attr( 'class', 'axis x-axis' )
+    //     .attr( 'transform', 'translate( 0,' + this.height + ')' )
+    //     .call( this.xAxis );
+
     this.chart.append( 'g' )
         .attr( 'class', 'axis y-axis' )
         .call( this.yAxis )
@@ -48,6 +67,17 @@ PrioViz.prototype.initVis = function(){
         .attr( 'dy', '.71em' )
         .style( 'text-anchor', 'end' )
         .text( 'Votes' );
+
+    var that = this;
+
+    this.chart.selectAll( 'text' )
+        .data( this.prioNames )
+      .append( 'text' )
+        .text( function( d ) { return d; })
+        .attr({
+            'class': 'bar-label',
+            'transform': function( d, i ) { return 'translate(' + that.xScale( i ) + ',' + that.height + ')'; }
+        });
 
     var timeExtent = d3.extent( this.data, function( d ) { return d.time; } );
     this.onSelectionChange( timeExtent[0], timeExtent[1] );
@@ -62,11 +92,8 @@ PrioViz.prototype.rescaleAxis = function() {
 PrioViz.prototype.updateVis = function() {
     var that = this;
 
-    // this.displayData = [216, 236, 184, 153, 633, 767, 1193, 2332, 3442, 4900, 11656, 16400, 26112, 38883, 41878, 53714];
-
     // Update scales
     this.yScale.domain( [ 0, d3.max( this.displayData ) ] );
-    console.log(this.yScale.domain());
     this.yAxis.scale( this.yScale );
     this.rescaleAxis();
 
@@ -93,7 +120,7 @@ PrioViz.prototype.onSelectionChange = function( selectionStart, selectionEnd ) {
 }
 
 PrioViz.prototype.filterAndAggregate = function( from, to ) {
-    var res = d3.range( 0, 15 );
+    var res = d3.range( 0, 16 );
     var dateArr = getDates( from, to );
     var perDayMap = d3.map( this.data, function( val ) { return val.time; } );
 
