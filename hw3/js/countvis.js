@@ -74,7 +74,7 @@ CountViz.prototype.updateVis = function() {
         .attr( 'y', 6)
         .attr( 'dy', '.71em' )
         .style( 'text-anchor', 'end' )
-        .text( 'Votes' );
+        .text( 'Voters' );
 
     this.chart.append( 'g' )
         .attr( 'class', 'brush' )
