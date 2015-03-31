@@ -47,7 +47,7 @@ var dataLoaded = function ( error, _allData, _metaData ) {
     }
 };
 
-function initDispatcher( myCount, myPrio, myAge, mySlope ) {
+function initDispatcher( myCount, myPrio, myAge, myStacked ) {
     var dispatch = d3.dispatch( 'selectionChanged' );
 
     myCount.brush.on( 'brush', function() {
@@ -60,7 +60,7 @@ function initDispatcher( myCount, myPrio, myAge, mySlope ) {
         myCount.updateBrushText( from, to );
         myPrio.onSelectionChange( from, to );
         myAge.onSelectionChange( from, to );
-        mySlope.onSelectionChange( from, to );
+        myStacked.onSelectionChange( from, to );
     });
 
     return dispatch;
@@ -71,9 +71,9 @@ var initVis = function(){
     var myPrio = new PrioViz( d3.select( '#prioVis' ), allData, metaData ),
         myCount = new CountViz( d3.select( '#countVis' ), allData ),
         myAge = new AgeViz( d3.select( '#ageVis' ), allData, metaData )
-        mySlope = new SlopeViz( d3.select( '#slope-viz' ), allData, metaData );
+        myStacked = new StackedViz( d3.select( '#stacked-viz' ), allData, metaData );
 
-    dispatcher = initDispatcher( myCount, myPrio, myAge, mySlope );
+    dispatcher = initDispatcher( myCount, myPrio, myAge, myStacked );
 };
 
 // from answer by Lukas Eder:
