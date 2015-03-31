@@ -7,6 +7,7 @@ SlopeViz = function( _parentElement, _data, _metaData ){
     this.data = _data;
     this.metaData = _metaData;
     this.displayData = [];
+    this.avgPrios = this.getAverages();
 
     this.initVis();
 };
@@ -77,6 +78,25 @@ SlopeViz.prototype.updateVis = function() {
 SlopeViz.prototype.onSelectionChange = function( selectionStart, selectionEnd ) {
     this.displayData = this.filterAndAggregate( selectionStart, selectionEnd );
     this.updateVis();
+};
+
+SlopeViz.prototype.getAverages = function() {
+    var voteSums = d3.range( 0, 16 ).map( function() { return 0; } );
+    var voteShares = [];
+    var totalCount = 0;
+
+    $.each( this.data, function( i, day ) {
+        $.each( day.prios, function( j, val ) {
+            totalCount += val;
+            voteSums[ j ] += val;
+        });
+    });
+
+    voteSums.map( function( val, i ) {
+        voteShares.push( val / otherTotal );
+    });
+
+    return voteShares;
 };
 
 SlopeViz.prototype.filterAndAggregate = function( from, to ) {
