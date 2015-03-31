@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head lang='en'>
+    <meta charset='UTF-8'>
+    <title>Homework 3 Design - MyWorld Data</title>
+
+    <!--Stylesheets-->
+    <link rel='stylesheet' type='text/css' href='libs/bootstrap/css/bootstrap.min.css'>
+    <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel='stylesheet' type='text/css' href='css/myStyle.css'>
+
+</head>
+<body>
+    <div class='container'>
+        <h1>Homework 3 Design Studio - MyWorld 2015 Data Visualization</h1>
+        <div class='row'>
+            <div class='col-md-8 col-sm-12'>
+               <p> The following visualization shows you the votes for MyWorld 2015. You can select a time range to see changes in the distribution of votes und distribution of age of the voters.</p>
+            </div>
+        </div>
+        <div class='row'>
+            <div class='col-md-8'>
+            </div>
+        </div>
+        <div class='row'>
+            <div class='col-md-9' id='countVis'>
+                <h3 class="">Number of votes</h3>
+                <p>Current brush: <span id='brush-text'></span></p>
+            </div>
+            <div class='col-md-3' id='ageVis'>
+                <h3 class="">Age distribution</h3>
+            </div>
+        </div>
+        <div class='row'>
+            <div class='col-md-6' id='prioVis'>
+                <h3 class="">Priority distribution</h3>
+            </div>
+            <div class='col-md-6' id='slope-viz'>
+                <h3 class="">Priority distribution comparison</h3>
+            </div>
+        </div>
+    </div>
+
+    <script src='libs/d3/d3.min.js' charset='utf-8'></script>
+    <script src='libs/jquery/jquery-2.1.1.min.js' charset='utf-8'></script>
+    <script src='libs/bootstrap/js/bootstrap.min.js' charset='utf-8'></script>
+    <script src='libs/queue/queue.min.js' charset='utf-8'></script>
+
+    <script src = 'js/priovis.js'></script>
+    <script src = 'js/agevis.js'></script>
+    <script src = 'js/countvis.js'></script>
+    <script src = 'js/slope-viz.js'></script>
+    <script src = 'js/init-viz-design.js'></script>
+
+</body>
+</html>

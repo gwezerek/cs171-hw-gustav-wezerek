@@ -6,20 +6,10 @@
 -
 **Answer:**
 
-Comparison scenario:
+Comparison scenario: The head of outreach and public relations at the United Nations might be interested in seeing whether respondents priorities around the holidays in 2013 (generalized to the month of December) were different than the average.
 
-![Layout exploration](designStudio/sketches.JPG)
-![Layout exploration](designStudio/sketches.JPG)
-![Layout exploration](designStudio/sketches.JPG)
+![Sketches](designStudio/sketches.jpg)
 
-
-Users who would be interested in this dataset:
-* economics student
-* high school social studies student
-* international investor
-* government analysts/researchers (in the U.S. at, say, the State Department or USITC), minister of finance or industry commerce
-* logistics researcher at shipping corporation
-* general public (given a news hook)
 
 ### Q5b
 **Question:** Implement one design in your visualization for **PrioVis** and explain why you have chosen this design.

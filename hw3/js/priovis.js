@@ -25,7 +25,7 @@ PrioViz.prototype.getNames = function() {
 PrioViz.prototype.initVis = function() {
 
     this.margin = { top: 10, right: 0, bottom: 200, left: 50 };
-    this.width = 650 - this.margin.left - this.margin.right;
+    this.width = 500 - this.margin.left - this.margin.right;
     this.height = 440 - this.margin.top - this.margin.bottom;
 
     this.xScale = d3.scale.ordinal()
