@@ -30,8 +30,17 @@ body {
     pointer-events: none;
 }
 
+.bar-rect {
+    opacity: 0.25;
+}
+
 .stacked-bar-rect {
     cursor: pointer;
+    opacity: 0.25;
+}
+
+.stacked-bar-rect.is-hovered {
+    opacity: 1;
 }
 
 .stacked-viz {

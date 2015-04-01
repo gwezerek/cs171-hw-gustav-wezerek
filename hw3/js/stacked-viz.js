@@ -58,25 +58,23 @@ StackedViz.prototype.updateVis = function() {
     // Add a rect for each data value
     groupEnter.append( 'rect' );
 
-    var rects = groups.selectAll( 'rect' )
+    this.rects = groups.selectAll( 'rect' )
         .data( function( d ) { return d; });
 
-    rects.enter().append( 'rect' );
+    this.rects.enter().append( 'rect' );
 
-    rects.transition()
+    this.rects.transition()
         .attr({
           height: 40,
           width: function( d ) { return that.xScale( d.y ); },
           x: function( d ) { return that.xScale( d.y0 ); },
           y: function( d, i ) { return i * 60 },
           class: 'stacked-bar-rect',
-          fill: function( d, i ) { console.log(d3.select(this.parentNode)); return that.barColor( d.z ); }
+          fill: function( d, i ) { return that.barColor( d.z ); }
         });
 
     // Add the avg sum label
-    this.updateText();
-
-    // console.log(d3.selectAll( '.bar-group' )[0][15]);
+    this.updateTotalText();
 
 };
 
@@ -86,7 +84,6 @@ StackedViz.prototype.onSelectionChange = function( selectionStart, selectionEnd 
 };
 
 StackedViz.prototype.getAverages = function() {
-
     var that = this;
     var voteSums = d3.range( 0, 16 ).map( function() { return 0; } );
     var daySums = [];
@@ -161,7 +158,20 @@ StackedViz.prototype.filterAndAggregate = function( from, to ) {
     return mergedArr;
 };
 
-StackedViz.prototype.updateText = function( selectionStart, selectionEnd ) {
+StackedViz.prototype.updateTotalText = function() {
     this.avgVotesBrushedEl.text( Math.round( this.avgVotesPerBrushedDay, 10 ) );
     this.avgVotesAllEl.text( Math.round( this.avgVotesPerDay, 10 ) );
+};
+
+StackedViz.prototype.updateSelectedText = function( parentEl ) {
+  d3.select( parentEl ).selectAll( 'rect' ).classed( 'is-hovered', 'true' );
+    // this.avgVotesBrushedEl.text( Math.round( this.avgVotesPerBrushedDay, 10 ) );
+    // this.avgVotesAllEl.text( Math.round( this.avgVotesPerDay, 10 ) );
+};
+
+StackedViz.prototype.clearSelectedText = function( parentEl ) {
+  console.log('ot');
+  d3.select( parentEl ).selectAll( 'rect' ).attr( 'class', 'stacked-bar-rect' );
+    // this.avgVotesBrushedEl.text( Math.round( this.avgVotesPerBrushedDay, 10 ) );
+    // this.avgVotesAllEl.text( Math.round( this.avgVotesPerDay, 10 ) );
 };

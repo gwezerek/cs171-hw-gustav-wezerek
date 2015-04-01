@@ -49,9 +49,19 @@ var dataLoaded = function ( error, _allData, _metaData ) {
 
 function initDispatcher( myCount, myPrio, myAge, myStacked ) {
     var dispatch = d3.dispatch( 'selectionChanged' );
+    var mouseoverDispatch = d3.dispatch( 'stackedMouseover' );
+    var mouseoutDispatch = d3.dispatch( 'stackedMouseout' );
 
     myCount.brush.on( 'brushend', function() {
       dispatch.selectionChanged( myCount.brush.extent() );
+    });
+
+    myStacked.rects.on( 'mouseover', function() {
+        mouseoverDispatch.stackedMouseover( this.parentNode );
+    });
+
+    myStacked.rects.on( 'mouseout', function() {
+        mouseoutDispatch.stackedMouseout( this.parentNode );
     });
 
     dispatch.on( 'selectionChanged', function( extent ) {
@@ -61,6 +71,14 @@ function initDispatcher( myCount, myPrio, myAge, myStacked ) {
         myPrio.onSelectionChange( from, to );
         myAge.onSelectionChange( from, to );
         myStacked.onSelectionChange( from, to );
+    });
+
+    mouseoverDispatch.on( 'stackedMouseover', function( hoveredParent ) {
+        myStacked.updateSelectedText( hoveredParent );
+    });
+
+    mouseoutDispatch.on( 'stackedMouseout', function( hoveredParent ) {
+        myStacked.clearSelectedText( hoveredParent );
     });
 
     return dispatch;
