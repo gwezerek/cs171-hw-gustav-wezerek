@@ -10,8 +10,12 @@ StackedViz = function( _parentElement, _data, _metaData ){
     this.avgVotesPerDay = 0;
     this.avgVotesPerBrushedDay = 0;
     this.avgPrios = this.getAverages();
+    this.brushedPrios = [];
     this.avgVotesBrushedEl = $( '#avg-votes-brushed' );
     this.avgVotesAllEl = $( '#avg-votes-all' );
+    this.prioNameEl = $( '#bar-info-name' );
+    this.brushedCountEl = $( '#bar-info-brushed' );
+    this.avgCountEl = $( '#bar-info-average' );
 
     this.initVis();
 };
@@ -142,6 +146,8 @@ StackedViz.prototype.filterAndAggregate = function( from, to ) {
         voteShares.push( val / totalCount * that.avgVotesPerBrushedDay );
     });
 
+    this.brushedPrios = voteShares;
+
     for ( var i = 0; i < 16; i += 1 ) {
       mergedArr.push([
       {
@@ -164,14 +170,19 @@ StackedViz.prototype.updateTotalText = function() {
 };
 
 StackedViz.prototype.updateSelectedText = function( parentEl ) {
+  var barGroups = $( '.bar-group' );
+  var index = barGroups.index( parentEl );
+
   d3.select( parentEl ).selectAll( 'rect' ).classed( 'is-hovered', 'true' );
-    // this.avgVotesBrushedEl.text( Math.round( this.avgVotesPerBrushedDay, 10 ) );
-    // this.avgVotesAllEl.text( Math.round( this.avgVotesPerDay, 10 ) );
+
+  this.prioNameEl.text( prioNames[ index ] );
+  this.brushedCountEl.text( Math.round( this.brushedPrios[ index ], 10 ) );
+  this.avgCountEl.text( Math.round( this.avgPrios[ index ], 10 ) );
 };
 
 StackedViz.prototype.clearSelectedText = function( parentEl ) {
-  console.log('ot');
   d3.select( parentEl ).selectAll( 'rect' ).attr( 'class', 'stacked-bar-rect' );
-    // this.avgVotesBrushedEl.text( Math.round( this.avgVotesPerBrushedDay, 10 ) );
-    // this.avgVotesAllEl.text( Math.round( this.avgVotesPerDay, 10 ) );
+  this.prioNameEl.empty();
+  this.brushedCountEl.empty();
+  this.avgCountEl.empty();
 };

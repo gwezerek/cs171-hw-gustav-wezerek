@@ -35,7 +35,6 @@ body {
 }
 
 .stacked-bar-rect {
-    cursor: pointer;
     opacity: 0.25;
 }
 
@@ -53,6 +52,11 @@ body {
 
 .bar-info {
     line-height: 1em;
+    /*font-weight: 700;*/
+}
+
+.bar-info-dynamic {
+    font-weight: 700;
 }
 
 .bar-label-mod {

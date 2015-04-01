@@ -3,6 +3,7 @@ var allData = [];
 var metaData = {};
 var dispatcher = {};
 var dateParser = d3.time.format('%Y-%m-%d').parse;
+var prioNames = [];
 
 var loadData = function(){
     queue()
@@ -91,7 +92,19 @@ var initVis = function(){
         myAge = new AgeViz( d3.select( '#ageVis' ), allData, metaData )
         myStacked = new StackedViz( d3.select( '#stacked-viz' ), allData, metaData );
 
+    prioNames = getPrioNames();
+
     dispatcher = initDispatcher( myCount, myPrio, myAge, myStacked );
+};
+
+var getPrioNames = function() {
+    var res = d3.range( 0, 15 );
+
+    for ( var i = 0; i < 16; i++ ) {
+        res[i] = this.metaData.priorities[i][ 'item-title' ];
+    }
+
+    return res;
 };
 
 // from answer by Lukas Eder:
