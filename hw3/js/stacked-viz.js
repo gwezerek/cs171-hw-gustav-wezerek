@@ -172,12 +172,15 @@ StackedViz.prototype.updateTotalText = function() {
 StackedViz.prototype.updateSelectedText = function( parentEl ) {
   var barGroups = $( '.bar-group' );
   var index = barGroups.index( parentEl );
+  var percentFormat = d3.format( '.1p' );
+  var brushedString = percentFormat( this.brushedPrios[ index ] / this.avgVotesPerBrushedDay ) + ' (' +  Math.round( this.brushedPrios[ index ], 10 ) + ')';
+  var avgString = percentFormat( this.avgPrios[ index ] / this.avgVotesPerDay ) + ' (' +  Math.round( this.avgPrios[ index ], 10 ) + ')';
 
   d3.select( parentEl ).selectAll( 'rect' ).classed( 'is-hovered', 'true' );
 
   this.prioNameEl.text( prioNames[ index ] );
-  this.brushedCountEl.text( Math.round( this.brushedPrios[ index ], 10 ) );
-  this.avgCountEl.text( Math.round( this.avgPrios[ index ], 10 ) );
+  this.brushedCountEl.text( brushedString );
+  this.avgCountEl.text( avgString );
 };
 
 StackedViz.prototype.clearSelectedText = function( parentEl ) {
