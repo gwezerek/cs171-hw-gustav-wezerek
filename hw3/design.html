@@ -35,8 +35,24 @@
             <div class='col-md-6' id='prioVis'>
                 <h3 class="">Priority distribution</h3>
             </div>
-            <div class='col-md-6' id='stacked-viz'>
-                <h3 class="">Priority distribution comparison</h3>
+            <div class='col-md-6'>
+                <h3 class="chart-hed">Priority distribution comparison</h3>
+                <div class="bar-label-mod">
+                    <div class="bar-label">
+                        <p class="bar-label-name">Brushed period</p>
+                        <p class="bar-label-votes"><span id="avg-votes-brushed"></span> avg. votes per day</p>
+                    </div>
+                    <div class="bar-label">
+                        <p class="bar-label-name">Entire period</p>
+                        <p class="bar-label-votes"><span id="avg-votes-all"></span> avg. votes per day</p>
+                    </div>
+                </div>
+                <div class="stacked-viz" id="stacked-viz"></div>
+                <div class="bar-info-wrap">
+                    <p class="bar-info">Selected priority: <span id="bar-info-name"></span></p>
+                    <p class="bar-info">Brushed period votes per day: <span id="bar-info-brushed"></span></p>
+                    <p class="bar-info">Average votes per day: <span id="bar-info-average"></span></p>
+                </div>
             </div>
         </div>
     </div>

@@ -7,69 +7,26 @@ StackedViz = function( _parentElement, _data, _metaData ){
     this.data = _data;
     this.metaData = _metaData;
     this.displayData = [];
-    this.medianVotesPerDay = 0;
+    this.avgVotesPerDay = 0;
+    this.avgVotesPerBrushedDay = 0;
     this.avgPrios = this.getAverages();
+    this.avgVotesBrushedEl = $( '#avg-votes-brushed' );
+    this.avgVotesAllEl = $( '#avg-votes-all' );
 
     this.initVis();
 };
 
 StackedViz.prototype.initVis = function(){
 
-    this.margin = { top: 200, right: 50, bottom: 200, left: 50 };
-    this.width = 530 - this.margin.left - this.margin.right;
-    this.height = 600 - this.margin.top - this.margin.bottom;
+    this.margin = { top: 0, right: 0, bottom: 200, left: 0 };
+    this.width = 350 - this.margin.left - this.margin.right;
+    this.height = 100 - this.margin.top - this.margin.bottom;
 
-    var dataset = [
-      [
-        { x: 0, y: 5 },
-        { x: 1, y: 4 },
-        { x: 2, y: 2 },
-        { x: 3, y: 7 },
-        { x: 4, y: 23 }
-      ],
-      [
-        { x: 0, y: 10 },
-        { x: 1, y: 12 },
-        { x: 2, y: 19 },
-        { x: 3, y: 23 },
-        { x: 4, y: 17 }
-      ],
-      [
-        { x: 0, y: 22 },
-        { x: 1, y: 28 },
-        { x: 2, y: 32 },
-        { x: 3, y: 35 },
-        { x: 4, y: 43 }
-      ]
-    ];
+    this.stack = d3.layout.stack();
+    this.barColor = d3.scale.category20();
 
-    //Set up stack method
-    var stack = d3.layout.stack();
-
-    //Data, stacked
-    stack(dataset);
-
-    // this.xScale = d3.scale.linear()
-    //     .domain( [ 0, this.medianVotesPerDay ] )
-    //     .range( [ 0, this.width ] );
-
-    this.xScale = d3.scale.ordinal()
-        .domain( d3.range(dataset[0].length) )
-        .rangeRoundBands( [0, this.width], 0.05 );
-
-    this.yScale = d3.scale.linear()
-      .domain([0,
-        d3.max(dataset, function(d) {
-          return d3.max(d, function(d) {
-            return d.y0 + d.y;
-          });
-        })
-      ])
-      .range([0, this.height]);
-
-    // this.yScale = d3.scale.linear()
-    //     .domain( [ 0, 1 ] )
-    //     .range( [ this.height, 0 ] );
+    this.xScale = d3.scale.linear()
+      .range([0, this.width]);
 
     this.svg = this.parentElement.append( 'svg' )
         .attr( 'width', this.width + this.margin.left + this.margin.right )
@@ -78,46 +35,49 @@ StackedViz.prototype.initVis = function(){
     this.chart = this.svg.append( 'g' )
         .attr( 'transform', 'translate( ' + this.margin.left + ',' + this.margin.top + ' )' );
 
-    var that = this;
-
-    // Add a group for each row of data
-    var groups = this.chart.selectAll("g")
-        .data(dataset)
-      .enter().append("g");
-
-    // Add a rect for each data value
-    var rects = groups.selectAll("rect")
-        .data(function(d) { return d; })
-      .enter().append("rect")
-        .attr("x", function(d, i) {
-          return that.xScale(i);
-        })
-        .attr("y", function(d) {
-          return that.yScale(d.y0);
-        })
-        .attr("height", function(d) {
-          return that.yScale(d.y);
-        })
-        .attr("width", that.xScale.rangeBand());
-
-    // this.avgBars = this.chart.selectAll( 'rect' )
-    //     .data( this.avgPrios )
-    //   .enter().append( 'rect' )
-    //     .attr({
-    //       height: 40,
-    //       width: function( d ) { return that.xScale( d ); },
-    //       x: 0,
-    //       y: 40,
-    //       class: 'bar-rect bar-avg-rect'
-    //     });
-
-
     var timeExtent = d3.extent( this.data, function( d ) { return d.time; } );
     this.onSelectionChange( timeExtent[0], timeExtent[1] );
 };
 
 StackedViz.prototype.updateVis = function() {
+
+    this.stack( this.displayData );
+    this.xScale.domain( [ 0, d3.max( [ this.avgVotesPerDay, this.avgVotesPerBrushedDay ] ) ] );
+
     var that = this;
+
+    // Add a group for each row of data
+    var groups = this.chart.selectAll( 'g' )
+        .data( this.displayData );
+
+    var groupEnter = groups.enter().append('g')
+      .attr( 'class', 'bar-group' );
+
+    groups.exit().remove();
+
+    // Add a rect for each data value
+    groupEnter.append( 'rect' );
+
+    var rects = groups.selectAll( 'rect' )
+        .data( function( d ) { return d; });
+
+    rects.enter().append( 'rect' );
+
+    rects.transition()
+        .attr({
+          height: 40,
+          width: function( d ) { return that.xScale( d.y ); },
+          x: function( d ) { return that.xScale( d.y0 ); },
+          y: function( d, i ) { return i * 60 },
+          class: 'stacked-bar-rect',
+          fill: function( d, i ) { console.log(d3.select(this.parentNode)); return that.barColor( d.z ); }
+        });
+
+    // Add the avg sum label
+    this.updateText();
+
+    // console.log(d3.selectAll( '.bar-group' )[0][15]);
+
 };
 
 StackedViz.prototype.onSelectionChange = function( selectionStart, selectionEnd ) {
@@ -145,17 +105,19 @@ StackedViz.prototype.getAverages = function() {
         daySums.push( daySum );
     });
 
-    this.medianVotesPerDay = d3.median( daySums );
+    this.avgVotesPerDay = d3.mean( daySums );
 
     voteSums.map( function( val, i ) {
-        voteShares.push( val / totalCount * that.medianVotesPerDay );
+        voteShares.push( val / totalCount * that.avgVotesPerDay );
     });
 
     return voteShares;
 };
 
 StackedViz.prototype.filterAndAggregate = function( from, to ) {
+    var mergedArr = [];
     var voteSums = d3.range( 0, 16 ).map( function() { return 0; } );
+    var daySums = [];
     var voteShares = [];
     var totalCount = 0;
     var dateArr = getDates( from, to );
@@ -163,20 +125,43 @@ StackedViz.prototype.filterAndAggregate = function( from, to ) {
 
     $.each( dateArr, function( index, value ) {
         if ( perDayMap.get( value ) ) {
+          var daySum = 0;
+
           $.each( perDayMap.get( value ).prios, function( j, prioVal ) {
+              daySum += prioVal;
               totalCount += prioVal;
               voteSums[ j ] += prioVal;
           });
+
+          daySums.push( daySum );
         }
     });
 
+    this.avgVotesPerBrushedDay = d3.mean( daySums );
+
+    var that = this;
+
     voteSums.map( function( val, i ) {
-        voteShares.push( val / totalCount );
+        voteShares.push( val / totalCount * that.avgVotesPerBrushedDay );
     });
 
-    return voteShares;
+    for ( var i = 0; i < 16; i += 1 ) {
+      mergedArr.push([
+      {
+        'x': 0,
+        'y': voteShares[ i ],
+        'z': i
+      }, {
+        'x': 1,
+        'y': that.avgPrios[ i ],
+        'z': i
+      }]);
+    }
+
+    return mergedArr;
 };
 
-
-
-
+StackedViz.prototype.updateText = function( selectionStart, selectionEnd ) {
+    this.avgVotesBrushedEl.text( Math.round( this.avgVotesPerBrushedDay, 10 ) );
+    this.avgVotesAllEl.text( Math.round( this.avgVotesPerDay, 10 ) );
+};

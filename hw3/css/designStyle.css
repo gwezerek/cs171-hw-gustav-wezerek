@@ -1,6 +1,11 @@
 body {
     font-family: 'PT Sans', sans-serif;
 }
+
+.chart-hed {
+    margin-bottom: 20px;
+}
+
 .axis text {
     font: 10px sans-serif;
 }
@@ -25,7 +30,39 @@ body {
     pointer-events: none;
 }
 
-.bar-rect {
-    stroke: darkgrey;
-    fill: none;
+.stacked-bar-rect {
+    cursor: pointer;
+}
+
+.stacked-viz {
+  display: inline-block;
+}
+
+.bar-info-wrap {
+    margin-top: 15px;
+}
+
+.bar-info {
+    line-height: 1em;
+}
+
+.bar-label-mod {
+    display: inline-block;
+    width: 150px;
+    text-align: right;
+    vertical-align: bottom;
+    line-height: 1em;
+    margin: 6px 10px 0 0;
+}
+
+.bar-label:first-child {
+    margin-bottom: 25px;
+}
+
+.bar-label-name {
+    margin-bottom: 5px;
+}
+
+.bar-label-votes {
+    color: gray;
 }

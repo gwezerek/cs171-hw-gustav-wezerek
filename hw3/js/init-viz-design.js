@@ -50,7 +50,7 @@ var dataLoaded = function ( error, _allData, _metaData ) {
 function initDispatcher( myCount, myPrio, myAge, myStacked ) {
     var dispatch = d3.dispatch( 'selectionChanged' );
 
-    myCount.brush.on( 'brush', function() {
+    myCount.brush.on( 'brushend', function() {
       dispatch.selectionChanged( myCount.brush.extent() );
     });
 
