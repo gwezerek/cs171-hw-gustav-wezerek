@@ -71,14 +71,10 @@ Optional features include :
 
 #### Project Schedule. Make sure that you plan your work so that you can avoid a big rush right before the final project deadline, and delegate different modules and responsibilities among your team members. Write this in terms of weekly deadlines.
 
-**April 10th**
-Have all data collected and cleaned, verify that the shapefile’s geojson or topojson conversion can be overlayed on a leaflet map.
+**April 10th**: Have all data collected and cleaned, verify that the shapefile’s geojson or topojson conversion can be overlayed on a leaflet map.
 
-**April 17th**
-Implement zip code correspondence with hardiness zones
+**April 17th**: Implement zip code correspondence with hardiness zones
 
-**April 24th**
-Have plant recommendations hooked up to hardiness zone output, implement weather detail graphs for zip codes
+**April 24th**: Have plant recommendations hooked up to hardiness zone output, implement weather detail graphs for zip codes
 
-**May 1**
-Polish the design, refactor code, implement sharing features and export options for the recommendations
+**May 1**: Polish the design, refactor code, implement sharing features and export options for the recommendations
